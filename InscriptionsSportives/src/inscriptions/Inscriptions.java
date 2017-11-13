@@ -252,7 +252,7 @@ public class Inscriptions implements Serializable
 		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
 				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
 		flechettes.add(tony);
-		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
+		Equipe lesManouches = inscriptios.createEquipe("Les Manouches");
 		lesManouches.add(boris);
 		lesManouches.add(tony);
 		System.out.println(inscriptions);
