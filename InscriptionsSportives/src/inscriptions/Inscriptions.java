@@ -13,9 +13,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Point d'entrée dans l'application, un seul objet de type Inscription
- * permet de gérer les compétitions, candidats (de type equipe ou personne)
- * ainsi que d'inscrire des candidats à des compétition.
+ * Point d'entrï¿½e dans l'application, un seul objet de type Inscription
+ * permet de gï¿½rer les compï¿½titions, candidats (de type equipe ou personne)
+ * ainsi que d'inscrire des candidats ï¿½ des compï¿½tition.
  */
 
 public class Inscriptions implements Serializable
@@ -30,7 +30,7 @@ public class Inscriptions implements Serializable
 	private Inscriptions(){}
 	
 	/**
-	 * Retourne les compétitions.
+	 * Retourne les compï¿½titions.
 	 * @return
 	 */
 	
@@ -40,7 +40,7 @@ public class Inscriptions implements Serializable
 	}
 	
 	/**
-	 * Retourne tous les candidats (personnes et équipes confondues).
+	 * Retourne tous les candidats (personnes et ï¿½quipes confondues).
 	 * @return
 	 */
 	
@@ -64,7 +64,7 @@ public class Inscriptions implements Serializable
 	}
 
 	/**
-	 * Retourne toutes les équipes.
+	 * Retourne toutes les ï¿½quipes.
 	 * @return
 	 */
 	
@@ -78,7 +78,7 @@ public class Inscriptions implements Serializable
 	}
 
 	/**
-	 * Créée une compétition. Ceci est le seul moyen, il n'y a pas
+	 * Crï¿½ï¿½e une compï¿½tition. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Competition}.
 	 * @param nom
 	 * @param dateCloture
@@ -95,7 +95,7 @@ public class Inscriptions implements Serializable
 	}
 
 	/**
-	 * Créée une Candidat de type Personne. Ceci est le seul moyen, il n'y a pas
+	 * Crï¿½ï¿½e une Candidat de type Personne. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Personne}.
 
 	 * @param nom
@@ -112,7 +112,7 @@ public class Inscriptions implements Serializable
 	}
 	
 	/**
-	 * Créée une Candidat de type équipe. Ceci est le seul moyen, il n'y a pas
+	 * Crï¿½ï¿½e une Candidat de type ï¿½quipe. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Equipe}.
 	 * @param nom
 	 * @param prenom
@@ -139,7 +139,7 @@ public class Inscriptions implements Serializable
 	
 	/**
 	 * Retourne l'unique instance de cette classe.
-	 * Crée cet objet s'il n'existe déjà.
+	 * Crï¿½e cet objet s'il n'existe dï¿½jï¿½.
 	 * @return l'unique objet de type {@link Inscriptions}.
 	 */
 	
@@ -156,8 +156,8 @@ public class Inscriptions implements Serializable
 	}
 
 	/**
-	 * Retourne un object inscriptions vide. Ne modifie pas les compétitions
-	 * et candidats déjà existants.
+	 * Retourne un object inscriptions vide. Ne modifie pas les compï¿½titions
+	 * et candidats dï¿½jï¿½ existants.
 	 */
 	
 	public Inscriptions reinitialiser()
@@ -167,8 +167,8 @@ public class Inscriptions implements Serializable
 	}
 
 	/**
-	 * Efface toutes les modifications sur Inscriptions depuis la dernière sauvegarde.
-	 * Ne modifie pas les compétitions et candidats déjà existants.
+	 * Efface toutes les modifications sur Inscriptions depuis la derniï¿½re sauvegarde.
+	 * Ne modifie pas les compï¿½titions et candidats dï¿½jï¿½ existants.
 	 */
 	
 	public Inscriptions recharger()
@@ -203,7 +203,7 @@ public class Inscriptions implements Serializable
 	
 	/**
 	 * Sauvegarde le gestionnaire pour qu'il soit ouvert automatiquement 
-	 * lors d'une exécution ultérieure du programme.
+	 * lors d'une exï¿½cution ultï¿½rieure du programme.
 	 * @throws IOException 
 	 */
 	
@@ -245,17 +245,24 @@ public class Inscriptions implements Serializable
 		final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
 
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
-		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", localDate, false);
+		Competition flechettes = inscriptions.createCompetition("Mondial de flÃ©chettes", localDate, false);
 		
 		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
-				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
+				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza"),
+		crunchy = inscriptions.createPersonne("Deiskryzz", "Dent de cuivre", "12");
 		flechettes.add(tony);
 		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
+		Equipe a = inscriptions.createEquipe("test");
 		lesManouches.add(boris);
 		lesManouches.add(tony);
+		  a.add(crunchy);
 		System.out.println(inscriptions);
 		lesManouches.delete();
+		a.delete();
 		System.out.println(inscriptions);
+		
+
+
 		try
 		{
 			inscriptions.sauvegarder();

@@ -14,9 +14,10 @@ public class TestPersonne {
 	final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
 
 	Inscriptions inscriptions = Inscriptions.getInscriptions();
-	Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", localDate, false);
+	Competition foot = inscriptions.createCompetition("Mondial de foot", localDate, false);
 	
 	Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty");
+
 
 	@Test
 	public void testDelete() {
@@ -34,18 +35,20 @@ public class TestPersonne {
 		String prenom = tony.getPrenom();
 		String mail = tony.getMail();
 		
-		assertEquals(nom, "tony");
-		assertEquals(prenom, "Dent de cuivre");
+		assertEquals(nom, "Tony");
+		assertEquals(prenom, "Dent de plomb");
 		assertEquals(mail, "azerty");
+		
+		System.out.println("Personne : " + nom + " , " + prenom + " , " + mail);
 	}
 
 	@Test
 	public void testGetPrenom() {
 		String prenom = tony.getPrenom();
 
-		assertEquals(prenom, "Dent de cuivre");
+		assertEquals(prenom, "Dent de plomb");
 		
-		System.out.println("Get : " + prenom + " , " + tony.getPrenom());
+		System.out.println("Get : " + prenom + " , Dent de plomb");
 	}
 
 	@Test
@@ -63,17 +66,33 @@ public class TestPersonne {
 
 	@Test
 	public void testGetMail() {
-		fail("Not yet implemented");
+		String mail = tony.getMail();
+		
+		assertEquals(mail, "azerty");
+		
+		System.out.println("GetMail : " + mail + " , " + tony.getMail());
 	}
 
 	@Test
 	public void testSetMail() {
-		fail("Not yet implemented");
+		String mail = "1234";
+		
+		Personne tony = inscriptions.createPersonne("tony", "Dent de cuivre", mail);
+		
+		assertEquals(tony.getMail(), mail);
+		
+		System.out.println("SetMail : " + mail + " , " + tony.getMail());
 	}
 
 	@Test
 	public void testGetEquipes() {
-		fail("Not yet implemented");
+		
+		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
+		lesManouches.add(tony);
+	
+		assertEquals(tony.getEquipes(), lesManouches);
+		
+		System.out.println("GetEquipe : " + lesManouches + " , " + tony.getEquipes());
 	}
 
 	@Test
