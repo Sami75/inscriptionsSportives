@@ -5,8 +5,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Représente une Equipe. C'est-à-dire un ensemble de personnes pouvant 
- * s'inscrire à une compétition.
+ * Reprï¿½sente une Equipe. C'est-ï¿½-dire un ensemble de personnes pouvant 
+ * s'inscrire ï¿½ une compï¿½tition.
  * 
  */
 
@@ -21,7 +21,7 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Retourne l'ensemble des personnes formant l'équipe.
+	 * Retourne l'ensemble des personnes formant l'ï¿½quipe.
 	 */
 	
 	public SortedSet<Personne> getMembres()
@@ -30,7 +30,7 @@ public class Equipe extends Candidat
 	}
 	
 	/**
-	 * Ajoute une personne dans l'équipe.
+	 * Ajoute une personne dans l'ï¿½quipe.
 	 * @param membre
 	 * @return
 	 */
@@ -42,7 +42,7 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Supprime une personne de l'équipe. 
+	 * Supprime une personne de l'ï¿½quipe. 
 	 * @param membre
 	 * @return
 	 */

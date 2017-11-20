@@ -248,17 +248,13 @@ public class Inscriptions implements Serializable
 		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", localDate, false);
 		
 		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
-				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza"),
-		crunchy = inscriptions.createPersonne("Deiskryzz", "Dent de cuivre", "12");
+				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
 		flechettes.add(tony);
 		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
-		Equipe a = inscriptions.createEquipe("test");
 		lesManouches.add(boris);
 		lesManouches.add(tony);
-		  a.add(crunchy);
 		System.out.println(inscriptions);
 		lesManouches.delete();
-		a.delete();
 		System.out.println(inscriptions);
 		
 
