@@ -59,12 +59,16 @@ public class Competition implements Comparable<Competition>, Serializable
 	{
 		LocalDate datesys = LocalDate.now();
 		// TODO retourner vrai si et seulement si la date systéme est antérieure à la date de clôture.
-		if(datesys.compareTo(dateCloture) > 1) {
-			return false;
+		try {
+			
+			if(datesys.compareTo(dateCloture) > 1) {
+				return false;
+			}
 		}
-		else {
+		catch(Exception e) {
+				System.out.println("La date cloture n'a pas été ajoutée");
+			}
 			return true;
-		}
 	}
 	
 	/**
@@ -96,12 +100,15 @@ public class Competition implements Comparable<Competition>, Serializable
 	public void setDateCloture(LocalDate dateCloture)
 	{
 		// TODO vérifier que l'on avance pas la date.
-		if(dateCloture.compareTo(this.dateCloture) > 0) {
-			System.out.println("Vous ne pouvez pas avancer la date");
-		}
-		else {
+		
+			if(dateCloture.compareTo(this.dateCloture) > 0) {
+				System.out.println("Vous ne pouvez pas avancer la date");
+			}
+			
+			else {
+
 			this.dateCloture = dateCloture;
-		}
+			}
 	}
 	
 	/**

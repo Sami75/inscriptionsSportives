@@ -132,7 +132,7 @@ public class Inscriptions implements Serializable
 		competitions.remove(competition);
 	}
 	
-	void remove(Candidat candidat)
+	public void remove(Candidat candidat)
 	{
 		candidats.remove(candidat);
 	}
@@ -245,7 +245,7 @@ public class Inscriptions implements Serializable
 		final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
 
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
-		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", localDate, false);
+		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", null, false);
 		
 		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
 				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
