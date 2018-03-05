@@ -12,6 +12,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import commandLineMenus.Action;
+import commandLineMenus.Menu;
+import commandLineMenus.Option;
+import commandLineMenus.rendering.examples.util.InOut;
+import sun.tools.jar.CommandLine;
+
+
 /**
  * Point d'entr�e dans l'application, un seul objet de type Inscription
  * permet de g�rer les comp�titions, candidats (de type equipe ou personne)
@@ -238,27 +245,87 @@ public class Inscriptions implements Serializable
 			+ "\nCompetitions  " + getCompetitions().toString();
 	}
 	
+	
 	public static void main(String[] args)
 	{
-		final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		final String input = "01-07-2018";
-		final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
-
-		Inscriptions inscriptions = Inscriptions.getInscriptions();
-		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", null, false);
+//		final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+//		final String input = "01-07-2018";
+//		final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
+//
+//		Inscriptions inscriptions = Inscriptions.getInscriptions();
+//		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", null, false);
+//		
+//		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
+//				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
+//		flechettes.add(tony);
+//		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
+//		lesManouches.add(boris);
+//		lesManouches.add(tony);
+//		System.out.println(inscriptions);
+//		lesManouches.delete();
+//		System.out.println(insAcriptions);
 		
-		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
-				boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza");
-		flechettes.add(tony);
-		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
-		lesManouches.add(boris);
-		lesManouches.add(tony);
-		System.out.println(inscriptions);
-		lesManouches.delete();
-		System.out.println(inscriptions);
+		Menu rootMenu = new Menu ("Inscription Sportive");
+
+		Menu addCompetition = new Menu("Compétition", "1");
+		Menu addEquipe = new Menu("Equipe", "2");
+		Menu addPersonne = new Menu("Personne", "3");
 		
+		rootMenu.add(addCompetition);
+		rootMenu.add(addEquipe);
+		rootMenu.add(addPersonne);
+		rootMenu.addQuit("q");
+		
+		addCompetition.add(
+			new Option("Ajouter une compétition", "1", new Action()
+			{
+				@Override
+				public void optionSelected() {
+					// TODO Auto-generated method stub
+					String nomCompet = InOut.getString("Entrer le nom de la compétition : ");
+					System.out.println("La compétition, " + nomCompet + " a était ajoutée avec succés");
+				}	
+			}));
+		
+		addCompetition.addBack("b");
+		
+		addEquipe.add(
+				new Option("Ajouter une équipe", "1", new Action()
+				{	
 
+					@Override
+					public void optionSelected() {
+						// TODO Auto-generated method stub
+						String nomEquipe = InOut.getString("Entrer le nom d'une équipe : ");
+						System.out.println("L'équipe, " + nomEquipe + " a était ajoutée avec succés");
+					}
+					
+				}));		
+		
+		addEquipe.addBack("b");
+		
+		
+		addPersonne.add(
+				new Option("Ajouter une personne", "1", new Action()
+				{
 
+					@Override
+					public void optionSelected() {
+						// TODO Auto-generated method stub
+						String nomPersonne = InOut.getString("Nom : ");
+						String prenomPersonne = InOut.getString("Prenom : ");
+						String adressePersonne = InOut.getString("Adresse : ");
+						String villePersonne = InOut.getString("Ville : ");
+						
+						System.out.println(nomPersonne + " " + prenomPersonne + ", a était ajouté(e) avec succés");
+					}
+					
+				}));
+		
+		addPersonne.addBack("b");
+		
+		rootMenu.start();
+		
 		try
 		{
 			inscriptions.sauvegarder();
