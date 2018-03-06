@@ -7,7 +7,8 @@ import commandLineMenus.rendering.examples.util.InOut;
 
 public class InscriptionsSportiveConsole {
 
-	private Inscriptions inscriptions;
+	private static Inscriptions inscriptions;
+
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
 		this.inscriptions = inscriptions;
@@ -96,7 +97,7 @@ public class InscriptionsSportiveConsole {
 		String newline = System.getProperty("line.seperator");
 		
 		return new Option("Lister les sportifs", "2", () -> {
-			System.out.println("Sportifs Inscrits : " + newline + toString());
+			System.out.println("Sportifs Inscrits : " + newline + inscriptions.getPersonnes());
 		});
 	}
 	

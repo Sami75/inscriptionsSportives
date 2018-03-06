@@ -263,6 +263,7 @@ public class Inscriptions implements Serializable
 //		lesManouches.delete();
 //		System.out.println(insAcriptions);
 		
+		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		InscriptionsSportiveConsole inscriptionsSportiveConsole = new InscriptionsSportiveConsole(inscriptions);
 		inscriptionsSportiveConsole.start();
 		
