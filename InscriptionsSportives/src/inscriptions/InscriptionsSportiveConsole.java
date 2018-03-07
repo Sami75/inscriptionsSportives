@@ -84,6 +84,7 @@ public class InscriptionsSportiveConsole {
 		menuPersonne.add(addAGuyOption());
 		menuPersonne.add(listGuysOption());
 		menuPersonne.add(removeGuyOption());
+		menuPersonne.add(menuEditGuy());
 		menuPersonne.addBack("b");
 		return menuPersonne;
 	}
@@ -154,4 +155,20 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
+	public Menu menuEditGuy() {
+		Menu menuEditGuy = new Menu ("Editer un sportif", "4");
+		menuEditGuy.add(editNameOption());
+		menuEditGuy.add(editLastNameOption());
+		menuEditGuy.add(editMailOption());
+		menuEditGuy.addBack("b");
+		return menuEditGuy;
+	}
+	
+	public Option editNameOption() {
+		return new Option("Edit le nom", "1", editNameAction());
+	}
+	
+	public Action editNameAction() {
+		return new Action
+	}
 }
