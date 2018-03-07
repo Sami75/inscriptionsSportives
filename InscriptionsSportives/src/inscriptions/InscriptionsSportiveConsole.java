@@ -1,5 +1,9 @@
 package inscriptions;
 
+import java.awt.List;
+import java.util.Collections;
+import java.util.SortedSet;
+
 import commandLineMenus.Action;
 import commandLineMenus.Menu;
 import commandLineMenus.Option;
@@ -8,10 +12,14 @@ import commandLineMenus.rendering.examples.util.InOut;
 public class InscriptionsSportiveConsole {
 
 	private static Inscriptions inscriptions;
+	private Personne createdGuy;
+	private Competition createdCompet;
+	private Equipe createdTeam;
+	
 
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
-		this.inscriptions = inscriptions;
+		InscriptionsSportiveConsole.inscriptions = inscriptions;
 	}
 	
 	public Menu MenuPrincipal() {
@@ -73,32 +81,77 @@ public class InscriptionsSportiveConsole {
 	
 	private Menu menuPersonne() {
 		Menu menuPersonne = new Menu("Personne", "3");
-		menuPersonne.add(addAGuy());
-		menuPersonne.add(listGuys());
+		menuPersonne.add(addAGuyOption());
+		menuPersonne.add(listGuysOption());
+		menuPersonne.add(removeGuyOption());
 		menuPersonne.addBack("b");
 		return menuPersonne;
 	}
 	
-	public Option addAGuy() {
+	public Option addAGuyOption() {
 		
-		return new Option("Ajouter un sportif", "1", () -> {
-			String nomPersonne = InOut.getString("Nom : ");
-			String prenomPersonne = InOut.getString("Prenom : ");
-//			String adressePersonne = InOut.getString("Adresse : ");
-//			String villePersonne = InOut.getString("Ville : ");
-			String mailPersonne = InOut.getString("Mail : ");
-			Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
-		
-			System.out.println(nomPersonne + " " + prenomPersonne + ", a était créé(e) avec succés");
-		});
+		return new Option("Ajouter un sportif", "1", addAGuyAction());
 	}
 	
-	public Option listGuys() {
-		String newline = System.getProperty("line.seperator");
+	private Action addAGuyAction() {
 		
-		return new Option("Lister les sportifs", "2", () -> {
-			System.out.println("Sportifs Inscrits : " + newline + inscriptions.getPersonnes());
-		});
+		return new Action ()
+		{
+			public void optionSelected()
+			{
+				String nomPersonne = InOut.getString("Nom : ");
+				String prenomPersonne = InOut.getString("Prenom : ");
+				String mailPersonne = InOut.getString("Mail : ");
+				Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
+				System.out.println(createdGuy.getNom() + " " + createdGuy.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + createdGuy.getMail());
+			}
+		};
+	}
+
+	public Option listGuysOption() {
+		
+		return new Option("Lister les sportifs", "2", listGuysAction());
+	}
+
+	private Action listGuysAction() {
+		
+		return new Action() {
+			public void optionSelected() {
+				System.out.println(inscriptions.getPersonnes());
+			}
+		};
+	}
+	
+	public Option removeGuyOption() {
+		return new Option("Supprimer un sportif", "3", removeGuyAction());
+	}
+	
+	private Action removeGuyAction() {
+		return new Action() {
+			public void optionSelected() {
+				String mailPersonne = InOut.getString("Mail : ");
+				String nomPersonne = null;
+				String prenomPersonne = null;
+				boolean deleteSuccess = false;
+				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
+				
+				for(Personne p : listGuys) {
+					
+					if(p.getMail().equals(mailPersonne)) {
+						p.delete();
+						nomPersonne = p.getNom();
+						prenomPersonne = p.getPrenom();
+						deleteSuccess = true;
+						break;
+					}
+				}
+				
+				if(deleteSuccess) {
+					System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
+				}
+					
+			}
+		};
 	}
 	
 }
