@@ -142,13 +142,15 @@ public class InscriptionsSportiveConsole {
 						p.delete();
 						nomPersonne = p.getNom();
 						prenomPersonne = p.getPrenom();
+						System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
 						deleteSuccess = true;
 						break;
 					}
 				}
 				
-				if(deleteSuccess) {
-					System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
+				if(!deleteSuccess) {
+					System.out.println("La suppression a échoué, car le sportif n'est pas inscrit");
+					
 				}
 					
 			}
@@ -165,10 +167,103 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option editNameOption() {
-		return new Option("Edit le nom", "1", editNameAction());
+		return new Option("Editer le nom", "1", editNameAction());
 	}
 	
 	public Action editNameAction() {
-		return new Action
+		return new Action () {
+			public void optionSelected() {
+				String mailPersonne = InOut.getString("Mail : ");
+				String nomPersonne = null;
+				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
+				
+				for(Personne p : listGuys) {
+					
+					if(p.getMail().equals(mailPersonne)) {
+						nomPersonne = p.getNom();
+						String prenomPersonne = p.getPrenom();
+						System.out.println("Vous vous apprêtez à modifier : " + nomPersonne + " " + prenomPersonne);
+						nomPersonne  = InOut.getString("Entrer le nouveau nom : ");
+						String checkEdit = InOut.getString(nomPersonne + " " + prenomPersonne + ", vous validez la modification ? (Y/N) ");
+
+						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
+							p.setNom(nomPersonne);
+							System.out.println(nomPersonne + " " + prenomPersonne + ", le nom a bien était modifié");
+							break;
+						}
+						else {
+							break;
+						}
+					}
+				}
+			}
+		};
+	}
+	
+	public Option editLastNameOption() {
+		return new Option("Editer le prenom", "2", editLastNameAction());
+	}
+	
+	public Action editLastNameAction() {
+		return new Action () {
+			public void optionSelected() {
+				String mailPersonne = InOut.getString("Mail : ");
+				String prenomPersonne = null;
+				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
+				
+				for(Personne p : listGuys) {
+					
+					if(p.getMail().equals(mailPersonne)) {
+						prenomPersonne = p.getPrenom();
+						String nomPersonne = p.getNom();
+						System.out.println("Vous vous apprêtez à modifier : " + nomPersonne + " " + prenomPersonne);
+						prenomPersonne  = InOut.getString("Entrer le nouveau prenom : ");
+						String checkEdit = InOut.getString(nomPersonne + " " + prenomPersonne + ", vous validez la modification ? (Y/N) ");
+
+						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
+							p.setPrenom(prenomPersonne);
+							System.out.println(nomPersonne + " " + prenomPersonne + ", le prenom a bien était modifié");
+							break;
+						}
+						else {
+							break;
+						}
+					}
+				}
+			}
+		};
+	}
+	
+	public Option editMailOption() {
+		return new Option("Editer le mail", "3", editMailAction());
+	}
+	
+	public Action editMailAction() {
+		return new Action () {
+			public void optionSelected() {
+				String mailPersonne = InOut.getString("Mail : ");
+				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
+				
+				for(Personne p : listGuys) {
+					
+					if(p.getMail().equals(mailPersonne)) {
+						String nomPersonne = p.getNom();
+						String prenomPersonne = p.getPrenom();
+						System.out.println("Vous vous apprêtez le mail de " + nomPersonne + " " + prenomPersonne);
+						mailPersonne  = InOut.getString("Entrer le nouveau mail : ");
+						String checkEdit = InOut.getString(mailPersonne + ", vous validez la modification ? (Y/N) ");
+
+						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
+							p.setMail(mailPersonne);
+							System.out.println("Le mail de : " + nomPersonne + " " + prenomPersonne + "a bien été modifié");
+							break;
+						}
+						else {
+							break;
+						}
+					}
+				}
+			}
+		};
 	}
 }
