@@ -1,6 +1,7 @@
 package inscriptions;
 
 import java.awt.List;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.SortedSet;
 
@@ -20,6 +21,17 @@ public class InscriptionsSportiveConsole {
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
 		InscriptionsSportiveConsole.inscriptions = inscriptions;
+	}
+	
+	public void autoSave() {
+		try
+		{
+			inscriptions.sauvegarder();
+		} 
+		catch (IOException e)
+		{
+			System.out.println("Sauvegarde impossible." + e);
+		}
 	}
 	
 	public Menu MenuPrincipal() {
@@ -61,22 +73,162 @@ public class InscriptionsSportiveConsole {
 	
 	private Menu menuEquipe() {
 		Menu menuEquipe = new Menu("Equipe", "2");
-		menuEquipe.add(
-				new Option("Créer une équipe", "1", new Action()
-				{	
-
-					@Override
-					public void optionSelected() {
-						// TODO Auto-generated method stub
-						String nomEquipe = InOut.getString("Entrer le nom de l'équipe : ");
-						Equipe createdTeam = inscriptions.createEquipe (nomEquipe);
-						System.out.println("L'équipe, " + nomEquipe + " a était créée avec succés");
-					}
-					
-				}));		
-		
+		menuEquipe.add(createTeamOption());
+		menuEquipe.add(listTeamOption());
+		menuEquipe.add(listMemberTeamOption());
+		menuEquipe.add(removeTeamOption());
+		menuEquipe.add(editNameTeamOption());
+		menuEquipe.add(removeGuyOfTeamOption());
 		menuEquipe.addBack("b");
 		return menuEquipe;
+	}
+	
+	public Option createTeamOption() {
+		return new Option("Créer une équipe", "1", createTeamAction());
+	}
+	
+	private Action createTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				String nomEquipe = InOut.getString("Entrer le nom de l'équipe : ");
+				Equipe createdTeam = inscriptions.createEquipe (nomEquipe);
+				System.out.println("L'équipe, " + nomEquipe + " a était créée avec succés");
+				autoSave();
+			}
+		};
+	}
+	
+	public Option listTeamOption() {
+		return new Option("Lister les équipes", "2", listTeamAction());
+	}
+	
+	private Action listTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				System.out.println(inscriptions.getEquipes());
+			}
+		};
+	}
+	
+	public Option listMemberTeamOption() {
+		return new Option("Lister les membres d'une équipe", "3", listMemberTeamAction());
+	}
+	
+	private Action listMemberTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				String nameTeam = InOut.getString("Nom de l'équipe : ");
+				SortedSet<Equipe> listTeam = inscriptions.getEquipes();
+				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
+				
+				for(Candidat c : listTeams) {
+					if(c.getNom().equals(nameTeam)) {
+						for(Equipe t : listTeam) {
+							if(t.toString().equals(c.toString())) {
+								System.out.println(t.getMembres());
+							}
+						}
+					}
+				}
+			}
+		};
+	}
+	
+	public Option removeTeamOption() {
+		return new Option("Supprimer une équipe", "4", removeTeamAction());
+	}
+	
+	private Action removeTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				String nameTeam = InOut.getString("Nom de l'équipe : ");
+				boolean deleteSuccess = false;
+				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
+				
+				for(Candidat c : listTeams) {
+					
+					if(c.getNom().equals(nameTeam)) {
+						c.delete();
+						System.out.println(c.getNom() + ", a bien était supprimée");
+						autoSave();
+						deleteSuccess = true;
+						break;
+					}
+				}
+				
+				if(!deleteSuccess) {
+					System.out.println("La suppression a échoué, car l'équipe n'est pas répertoriée");
+					
+				}
+			}
+		};
+	}
+	
+	public Option editNameTeamOption() {
+		return new Option("Editer le nom d'une équipe", "5", editNameTeamAction());
+	}
+	
+	private Action editNameTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				String nameTeam = InOut.getString("Nom de l'équipe : ");
+				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
+				
+				for(Candidat c : listTeams) {
+					
+					if(c.getNom().equals(nameTeam)) {
+						String newName = InOut.getString("Nouveau de l'équipe : ");
+						c.setNom(newName);
+						autoSave();
+						System.out.println("Le nouveau nom de l'équipe : " + nameTeam + "est : " + newName);
+						break;
+					}
+				}
+			}
+		};
+	}
+	
+	public Option removeGuyOfTeamOption() {
+		return new Option("Supprimer un sportif d'une équipe", "6", removeGuyOfTeamAction());
+	}
+	
+	private Action removeGuyOfTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				String nameTeam = InOut.getString("Nom de l'équipe : ");
+				boolean deleteSuccess = false;
+				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
+				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
+				SortedSet<Equipe> listTeam = inscriptions.getEquipes();
+				String nomPersonne = null;
+				
+				do {
+					for(Candidat c : listTeams) {
+					
+						if(c.getNom().equals(nameTeam)) {
+							nomPersonne = InOut.getString("Entrer le nom du sportif à supprimer : ");
+							for(Personne p : listGuys) {
+								if(p.getNom().equals(nomPersonne)) {
+									for(Equipe t : listTeam) {
+										if(t.toString().equals(c.toString())) {
+											t.remove(p);
+											System.out.println(p.getNom() + " " + p.getPrenom() + ", a bien était supprimée de : " + c.getNom());
+											autoSave();
+											deleteSuccess = true;
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				
+					if(!deleteSuccess) {
+						System.out.println("La suppression a échoué, car le sportif n'appartient pas  n'est pas répertoriée");
+					}
+				}while(!nomPersonne.equals("stop"));
+			}
+		};
 	}
 	
 	private Menu menuPersonne() {
@@ -85,6 +237,7 @@ public class InscriptionsSportiveConsole {
 		menuPersonne.add(listGuysOption());
 		menuPersonne.add(removeGuyOption());
 		menuPersonne.add(menuEditGuy());
+		menuPersonne.add(addAGuyInTeamOption());
 		menuPersonne.addBack("b");
 		return menuPersonne;
 	}
@@ -105,6 +258,7 @@ public class InscriptionsSportiveConsole {
 				String mailPersonne = InOut.getString("Mail : ");
 				Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
 				System.out.println(createdGuy.getNom() + " " + createdGuy.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + createdGuy.getMail());
+				autoSave();
 			}
 		};
 	}
@@ -143,6 +297,7 @@ public class InscriptionsSportiveConsole {
 						nomPersonne = p.getNom();
 						prenomPersonne = p.getPrenom();
 						System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
+						autoSave();
 						deleteSuccess = true;
 						break;
 					}
@@ -154,6 +309,7 @@ public class InscriptionsSportiveConsole {
 				}
 					
 			}
+			
 		};
 	}
 	
@@ -189,6 +345,7 @@ public class InscriptionsSportiveConsole {
 						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
 							p.setNom(nomPersonne);
 							System.out.println(nomPersonne + " " + prenomPersonne + ", le nom a bien était modifié");
+							autoSave();
 							break;
 						}
 						else {
@@ -223,6 +380,7 @@ public class InscriptionsSportiveConsole {
 						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
 							p.setPrenom(prenomPersonne);
 							System.out.println(nomPersonne + " " + prenomPersonne + ", le prenom a bien était modifié");
+							autoSave();
 							break;
 						}
 						else {
@@ -256,6 +414,7 @@ public class InscriptionsSportiveConsole {
 						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
 							p.setMail(mailPersonne);
 							System.out.println("Le mail de : " + nomPersonne + " " + prenomPersonne + "a bien été modifié");
+							autoSave();
 							break;
 						}
 						else {
@@ -263,6 +422,48 @@ public class InscriptionsSportiveConsole {
 						}
 					}
 				}
+			}
+		};
+	}
+	
+	public Option addAGuyInTeamOption() {
+		return new Option("Ajouter un sportif dans une équipe", "5", addAGuyInTeamAction());
+	}
+	
+	private Action addAGuyInTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
+				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
+				System.out.println(inscriptions.getEquipes());
+				String selectTeam = InOut.getString("Selectionner l'équipe : ");
+				String nomPersonne = null;
+				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
+				System.out.println(inscriptions.getPersonnes());
+				
+				do {
+					nomPersonne = InOut.getString("Nom du sportif : ");
+					for(Candidat c : listTeams) {
+						if(c.getNom().equals(selectTeam)) {
+							for(Equipe t : listTeam) {
+								if(t.toString().equals(c.toString())) {
+									
+									for(Personne p : listGuys) {
+										if(p.getNom().equals(nomPersonne)) {
+											t.add(p);
+											autoSave();
+											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
+										}
+									}
+								}
+								else {
+									System.out.println("Il y a eu une erreur lors de l'ajout du sportif dans l'équipe :" + c.getNom());
+								}
+							}
+							
+						}
+					}	
+				}while(!nomPersonne.equals("stop"));
 			}
 		};
 	}
