@@ -266,7 +266,5 @@ public class Inscriptions implements Serializable
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		InscriptionsSportiveConsole inscriptionsSportiveConsole = new InscriptionsSportiveConsole(inscriptions);
 		inscriptionsSportiveConsole.start();
-		
-		
 	}
 }
