@@ -55,14 +55,14 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	private Menu menuCompetition() {
-		Menu menuCompetition = new Menu("Compétition", "1");
+		Menu menuCompetition = new Menu("Menu Compétition", "1");
 		
 		menuCompetition.add(createCompetOption());
 		menuCompetition.add(listCompetOption());
 		menuCompetition.add(addTeamInCompetOption());
 		menuCompetition.add(addGuyInCompetOption());
-//		menuCompetition.add(editNameCompetOption());
-//		menuCompetition.add(removeCompetOption());
+		menuCompetition.add(editNameCompetOption());
+		menuCompetition.add(menuRemove());
 		menuCompetition.addBack("b");
 		return menuCompetition;
 	}
@@ -77,19 +77,17 @@ public class InscriptionsSportiveConsole {
 				String nomCompet = InOut.getString("Entrer le nom de la compétition : ");
 				String dateCloture = InOut.getString("Entrer la date de clôture : ");
 				final LocalDate localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+				
+				
+				
 				String teamOrNotTeam = null;
 				boolean enEquipe = false;
 				
 				do {
-					teamOrNotTeam = InOut.getString("Entrer 'equipe' pour une compétition en équipe ? (equipe) ");
-				}while(!teamOrNotTeam.equals("equipe"));	
+					teamOrNotTeam = InOut.getString("Entrer 'equipe' pour une compétition en équipe ou solo pour compétition individuel ? (equipe/solo) ");
+				}while((teamOrNotTeam.equals("equipe")) && (teamOrNotTeam.equals("solo")));	
 				
-				if(teamOrNotTeam.equals("equipe")) {
-					enEquipe = true;
-				}
-				else {
-					enEquipe = false;
-				}
+				enEquipe = teamOrNotTeam.equals("equipe");
 				
 				Competition createdCompet = inscriptions.createCompetition(nomCompet, localDate, enEquipe);
 				autoSave();
@@ -187,13 +185,13 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	private Menu menuEquipe() {
-		Menu menuEquipe = new Menu("Equipe", "2");
+		Menu menuEquipe = new Menu("Menu Equipe", "2");
 		menuEquipe.add(createTeamOption());
-		menuEquipe.add(listTeamOption());
-		menuEquipe.add(listMemberTeamOption());
+		menuEquipe.add(menuList());
 		menuEquipe.add(removeTeamOption());
 		menuEquipe.add(editNameTeamOption());
 		menuEquipe.add(removeGuyOfTeamOption());
+		menuEquipe.add(addAGuyInTeamOption());
 		menuEquipe.addBack("b");
 		return menuEquipe;
 	}
@@ -213,8 +211,16 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
+	private Menu menuList() {
+		Menu menuList = new Menu("Affichage", "2");
+		menuList.add(listTeamOption());
+		menuList.add(listMemberTeamOption());
+		menuList.addBack("b");
+		return menuList;
+	}
+	
 	public Option listTeamOption() {
-		return new Option("Lister les équipes", "2", listTeamAction());
+		return new Option("Lister les équipes", "1", listTeamAction());
 	}
 	
 	private Action listTeamAction() {
@@ -226,7 +232,7 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option listMemberTeamOption() {
-		return new Option("Lister les membres d'une équipe", "3", listMemberTeamAction());
+		return new Option("Lister les membres d'une équipe", "2", listMemberTeamAction());
 	}
 	
 	private Action listMemberTeamAction() {
@@ -250,7 +256,7 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option removeTeamOption() {
-		return new Option("Supprimer une équipe", "4", removeTeamAction());
+		return new Option("Supprimer une équipe", "3", removeTeamAction());
 	}
 	
 	private Action removeTeamAction() {
@@ -280,7 +286,7 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option editNameTeamOption() {
-		return new Option("Editer le nom d'une équipe", "5", editNameTeamAction());
+		return new Option("Editer le nom d'une équipe", "4", editNameTeamAction());
 	}
 	
 	private Action editNameTeamAction() {
@@ -304,7 +310,7 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option removeGuyOfTeamOption() {
-		return new Option("Supprimer un sportif d'une équipe", "6", removeGuyOfTeamAction());
+		return new Option("Supprimer un sportif d'une équipe", "5", removeGuyOfTeamAction());
 	}
 	
 	private Action removeGuyOfTeamAction() {
@@ -346,13 +352,160 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
+	public Option editNameCompetOption() {
+		return new Option("Editer le nom d'une compétition", "5", editNameCompetAction());
+	}
+	
+	private Action editNameCompetAction() {
+		return new Action() {
+			public void optionSelected() {
+				SortedSet <Competition> listCompets = inscriptions.getCompetitions();
+				String nameCompet = InOut.getString("Enter le nom de la compétition : ");
+				
+				for(Competition co : listCompets) {
+					if(co.getNom().equals(nameCompet)) {
+						String newName = InOut.getString("Entrer le nouveau nom : ");
+						co.setNom(newName);
+						break;
+					}
+					else {
+						System.out.println("Il y a eu une erreur lors du changement de nom, la compétition n'existe pas.");
+						break;
+					}
+				}
+			
+			}
+		};
+	}
+	
+	private Menu menuRemove() {
+		Menu menuRemove = new Menu("Menu Suppression", "6");
+		menuRemove.add(removeCompetOption());
+		menuRemove.add(removeGuyOrTeamOfCompetOption());
+		menuRemove.addBack("b");
+		return menuRemove;
+	}
+	
+	public Option removeCompetOption() {
+		return new Option("Supprimer une compétition", "1", removeCompetAction());
+	}
+
+	private Action removeCompetAction() {
+		return new Action() {
+			public void optionSelected() {
+				SortedSet <Competition> listCompets = inscriptions.getCompetitions();
+				String nameCompet = InOut.getString("Entrer une compétition : ");
+				boolean deleteSuccess = false;
+				
+				for(Competition co : listCompets) {
+					if(co.getNom().equals(nameCompet)) {
+						co.delete();
+						System.out.println(nameCompet +  ", a bien était supprimée.");
+						autoSave();
+						deleteSuccess = true;
+						break;
+					}
+				}
+				
+				if(!deleteSuccess) {
+					System.out.println("La suppression a échoué, car la compétition n'existe pas.");
+					
+				}
+			}		
+	
+		};
+		
+	}
+	
+	public Option removeGuyOrTeamOfCompetOption() {
+		return new Option("Supprimer des sportifs ou des équipes d'une compétition", "2", removeGuyOrTeamOfCompetAction());
+	}
+
+	private Action removeGuyOrTeamOfCompetAction() {
+		return new Action() {
+			public void optionSelected() {
+				SortedSet <Competition> listCompets = inscriptions.getCompetitions();
+				SortedSet <Candidat> listCandidats = inscriptions.getCandidats();
+				String nameCompet = InOut.getString("Entrer une compétition : ");
+				String nameCandidat = null;
+				boolean deleteSuccess = false;
+				
+				do {
+					
+					for(Competition co : listCompets) {
+						if(co.getNom().equals(nameCompet)) {
+							nameCandidat = InOut.getString("Entrer le nom du sportif ou d'une équipe : ");
+							for(Candidat c : listCandidats) {
+								if(c.getNom().equals(nameCandidat)) {
+									co.remove(c);
+									System.out.println(nameCandidat +  ", a bien était supprimée.");
+									autoSave();
+									deleteSuccess = true;
+									break;
+								}
+							}
+						}
+					}
+					
+					if(!deleteSuccess) {
+						System.out.println("La suppression a échoué, car le sportif n'existe pas ou n'est pas inscrit dans la compétition.");			
+					}
+					
+				}while(!nameCandidat.equals("stop"));
+			}		
+	
+		};
+	}
+	
+	public Option addAGuyInTeamOption() {
+		return new Option("Ajouter un sportif dans une équipe", "7", addAGuyInTeamAction());
+	}
+	
+	private Action addAGuyInTeamAction() {
+		return new Action() {
+			public void optionSelected() {
+				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
+				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
+				System.out.println(inscriptions.getEquipes());
+				String selectTeam = InOut.getString("Selectionner l'équipe : ");
+				String nomPersonne = null;
+				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
+				System.out.println(inscriptions.getPersonnes());
+				
+				do {
+					nomPersonne = InOut.getString("Nom du sportif : ");
+					for(Candidat c : listTeams) {
+						if(c.getNom().equals(selectTeam)) {
+							for(Equipe t : listTeam) {
+								if(t.toString().equals(c.toString())) {
+									
+									for(Personne p : listGuys) {
+										if(p.getNom().equals(nomPersonne)) {
+											t.add(p);
+											autoSave();
+											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
+										}
+									}
+								}
+								else {
+									System.out.println("Il y a eu une erreur lors de l'ajout du sportif dans l'équipe :" + c.getNom());
+								}
+							}
+							
+						}
+					}	
+				}while(!nomPersonne.equals("stop"));
+			}
+		};
+	}
+	
 	private Menu menuPersonne() {
-		Menu menuPersonne = new Menu("Personne", "3");
+		Menu menuPersonne = new Menu("Menu Personne", "3");
 		menuPersonne.add(addAGuyOption());
 		menuPersonne.add(listGuysOption());
-		menuPersonne.add(removeGuyOption());
-		menuPersonne.add(menuEditGuy());
-		menuPersonne.add(addAGuyInTeamOption());
+//		menuPersonne.add(removeGuyOption());
+//		menuPersonne.add(menuEditGuy());
+		menuPersonne.add(menuSelectGuys());
 		menuPersonne.addBack("b");
 		return menuPersonne;
 	}
@@ -404,27 +557,30 @@ public class InscriptionsSportiveConsole {
 				String prenomPersonne = null;
 				boolean deleteSuccess = false;
 				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
+				SortedSet<Candidat> listCandidats = inscriptions.getCandidats();
 				
 				for(Personne p : listGuys) {
 					
 					if(p.getMail().equals(mailPersonne)) {
-						p.delete();
-						nomPersonne = p.getNom();
-						prenomPersonne = p.getPrenom();
-						System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
-						autoSave();
-						deleteSuccess = true;
-						break;
+						for(Candidat c : listCandidats) {
+							if(c.getNom().equals(p.getNom())) {
+								p.delete();
+								c.delete();
+								nomPersonne = p.getNom();
+								prenomPersonne = p.getPrenom();
+								System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
+								autoSave();
+								deleteSuccess = true;
+								break;
+							}
+						}
 					}
 				}
 				
 				if(!deleteSuccess) {
-					System.out.println("La suppression a échoué, car le sportif n'est pas inscrit");
-					
-				}
-					
+					System.out.println("La suppression a échoué, car le sportif n'est pas inscrit");	
+				}	
 			}
-			
 		};
 	}
 	
@@ -464,6 +620,7 @@ public class InscriptionsSportiveConsole {
 							break;
 						}
 						else {
+							System.out.println("Une erreur a eu lieu lors du changement de nom");
 							break;
 						}
 					}
@@ -541,45 +698,8 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
-	public Option addAGuyInTeamOption() {
-		return new Option("Ajouter un sportif dans une équipe", "5", addAGuyInTeamAction());
-	}
-	
-	private Action addAGuyInTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
-				System.out.println(inscriptions.getEquipes());
-				String selectTeam = InOut.getString("Selectionner l'équipe : ");
-				String nomPersonne = null;
-				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
-				System.out.println(inscriptions.getPersonnes());
-				
-				do {
-					nomPersonne = InOut.getString("Nom du sportif : ");
-					for(Candidat c : listTeams) {
-						if(c.getNom().equals(selectTeam)) {
-							for(Equipe t : listTeam) {
-								if(t.toString().equals(c.toString())) {
-									
-									for(Personne p : listGuys) {
-										if(p.getNom().equals(nomPersonne)) {
-											t.add(p);
-											autoSave();
-											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
-										}
-									}
-								}
-								else {
-									System.out.println("Il y a eu une erreur lors de l'ajout du sportif dans l'équipe :" + c.getNom());
-								}
-							}
-							
-						}
-					}	
-				}while(!nomPersonne.equals("stop"));
-			}
-		};
+	private Menu menuSelectGuys() {
+		Menu selectGuys = new Menu("Selectionner un sportif", "3");
+		return menuSelectGuys();
 	}
 }
