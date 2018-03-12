@@ -1,13 +1,14 @@
 package inscriptions;
 
-import java.awt.List;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.SortedSet;
+import java.util.ArrayList;
 
 import commandLineMenus.Action;
+import commandLineMenus.List;
 import commandLineMenus.Menu;
 import commandLineMenus.Option;
 import commandLineMenus.rendering.examples.util.InOut;
@@ -25,15 +26,23 @@ public class InscriptionsSportiveConsole {
 		InscriptionsSportiveConsole.inscriptions = inscriptions;
 	}
 	
-	public void autoSave() {
-		try
-		{
-			inscriptions.sauvegarder();
-		} 
-		catch (IOException e)
-		{
-			System.out.println("Sauvegarde impossible." + e);
-		}
+	public Option autoSaveOption() {
+		return new Option("Sauvegarder", "x", autoSaveAction());
+	}
+	
+	private Action autoSaveAction() {
+		return new Action() {
+			public void optionSelected() {
+				try
+				{
+					inscriptions.sauvegarder();
+				} 
+				catch (IOException e)
+				{
+					System.out.println("Sauvegarde impossible." + e);
+				}
+			}
+		};
 	}
 	
 	public Menu MenuPrincipal() {
@@ -90,7 +99,6 @@ public class InscriptionsSportiveConsole {
 				enEquipe = teamOrNotTeam.equals("equipe");
 				
 				Competition createdCompet = inscriptions.createCompetition(nomCompet, localDate, enEquipe);
-				autoSave();
 				System.out.println("La compétition, " + nomCompet + " a était créée avec succés");
 			}
 		};
@@ -132,7 +140,6 @@ public class InscriptionsSportiveConsole {
 									for(Equipe t : listTeam) {
 										if(t.toString().equals(c.toString())) {
 											co.add(t);
-											autoSave();
 											System.out.println(nameTeam + "est inscrite dans la compétition " + nameCompet);
 										}
 									}
@@ -170,7 +177,6 @@ public class InscriptionsSportiveConsole {
 									for(Personne p : listGuys) {
 										if(p.getNom().equals(nameGuy)) {
 											co.add(p);
-											autoSave();
 											System.out.println(nameGuy + "est inscrite dans la compétition " + nameCompet);
 										}
 									}
@@ -206,7 +212,6 @@ public class InscriptionsSportiveConsole {
 				String nomEquipe = InOut.getString("Entrer le nom de l'équipe : ");
 				Equipe createdTeam = inscriptions.createEquipe (nomEquipe);
 				System.out.println("L'équipe, " + nomEquipe + " a était créée avec succés");
-				autoSave();
 			}
 		};
 	}
@@ -271,7 +276,6 @@ public class InscriptionsSportiveConsole {
 					if(c.getNom().equals(nameTeam)) {
 						c.delete();
 						System.out.println(c.getNom() + ", a bien était supprimée");
-						autoSave();
 						deleteSuccess = true;
 						break;
 					}
@@ -300,7 +304,6 @@ public class InscriptionsSportiveConsole {
 					if(c.getNom().equals(nameTeam)) {
 						String newName = InOut.getString("Nouveau de l'équipe : ");
 						c.setNom(newName);
-						autoSave();
 						System.out.println("Le nouveau nom de l'équipe : " + nameTeam + "est : " + newName);
 						break;
 					}
@@ -334,7 +337,6 @@ public class InscriptionsSportiveConsole {
 										if(t.toString().equals(c.toString())) {
 											t.remove(p);
 											System.out.println(p.getNom() + " " + p.getPrenom() + ", a bien était supprimée de : " + c.getNom());
-											autoSave();
 											deleteSuccess = true;
 											break;
 										}
@@ -401,7 +403,6 @@ public class InscriptionsSportiveConsole {
 					if(co.getNom().equals(nameCompet)) {
 						co.delete();
 						System.out.println(nameCompet +  ", a bien était supprimée.");
-						autoSave();
 						deleteSuccess = true;
 						break;
 					}
@@ -439,7 +440,6 @@ public class InscriptionsSportiveConsole {
 								if(c.getNom().equals(nameCandidat)) {
 									co.remove(c);
 									System.out.println(nameCandidat +  ", a bien était supprimée.");
-									autoSave();
 									deleteSuccess = true;
 									break;
 								}
@@ -482,7 +482,6 @@ public class InscriptionsSportiveConsole {
 									for(Personne p : listGuys) {
 										if(p.getNom().equals(nomPersonne)) {
 											t.add(p);
-											autoSave();
 											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
 										}
 									}
@@ -505,14 +504,15 @@ public class InscriptionsSportiveConsole {
 		menuPersonne.add(listGuysOption());
 //		menuPersonne.add(removeGuyOption());
 //		menuPersonne.add(menuEditGuy());
-		menuPersonne.add(menuSelectGuys());
+		menuPersonne.add(selectGuys());
+		menuPersonne.add(autoSaveOption());
 		menuPersonne.addBack("b");
 		return menuPersonne;
 	}
 	
 	public Option addAGuyOption() {
 		
-		return new Option("Ajouter un sportif", "1", addAGuyAction());
+		return new Option("Ajouter un sportif", "c", addAGuyAction());
 	}
 	
 	private Action addAGuyAction() {
@@ -526,14 +526,13 @@ public class InscriptionsSportiveConsole {
 				String mailPersonne = InOut.getString("Mail : ");
 				Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
 				System.out.println(createdGuy.getNom() + " " + createdGuy.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + createdGuy.getMail());
-				autoSave();
 			}
 		};
 	}
 
 	public Option listGuysOption() {
 		
-		return new Option("Lister les sportifs", "2", listGuysAction());
+		return new Option("Lister les sportifs", "a", listGuysAction());
 	}
 
 	private Action listGuysAction() {
@@ -545,161 +544,102 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
-	public Option removeGuyOption() {
-		return new Option("Supprimer un sportif", "3", removeGuyAction());
+	private List<Personne> selectGuys()
+	{
+		return new List<Personne>("Sélectionner une personne", "e", 
+				() -> new ArrayList<>(inscriptions.getPersonnes()),
+				(element) -> menuSelectGuy(element)
+				);
 	}
 	
-	private Action removeGuyAction() {
-		return new Action() {
-			public void optionSelected() {
-				String mailPersonne = InOut.getString("Mail : ");
-				String nomPersonne = null;
-				String prenomPersonne = null;
-				boolean deleteSuccess = false;
-				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
-				SortedSet<Candidat> listCandidats = inscriptions.getCandidats();
-				
-				for(Personne p : listGuys) {
-					
-					if(p.getMail().equals(mailPersonne)) {
-						for(Candidat c : listCandidats) {
-							if(c.getNom().equals(p.getNom())) {
-								p.delete();
-								c.delete();
-								nomPersonne = p.getNom();
-								prenomPersonne = p.getPrenom();
-								System.out.println(nomPersonne + " " + prenomPersonne + ", a bien était supprimé(e)");
-								autoSave();
-								deleteSuccess = true;
-								break;
-							}
-						}
-					}
-				}
-				
-				if(!deleteSuccess) {
-					System.out.println("La suppression a échoué, car le sportif n'est pas inscrit");	
-				}	
-			}
-		};
+	private Menu menuSelectGuy(Personne personne) {
+		Menu selectGuy = new Menu(personne.getNom() + " " + personne.getPrenom());
+		selectGuy.add(menuEditGuy(personne));
+		selectGuy.add(removeGuyOption(personne));
+		selectGuy.addBack("b");
+		return selectGuy;
 	}
 	
-	public Menu menuEditGuy() {
-		Menu menuEditGuy = new Menu ("Editer un sportif", "4");
-		menuEditGuy.add(editNameOption());
-		menuEditGuy.add(editLastNameOption());
-		menuEditGuy.add(editMailOption());
+	public Option removeGuyOption(Personne personne) {
+		return new Option("Supprimer " + personne.getNom() + " " + personne.getPrenom(), "s", 
+				() -> {personne.delete();}
+				);
+	}
+	
+	public Menu menuEditGuy(Personne personne) {
+		Menu menuEditGuy = new Menu ("Menu édition", "e");
+		menuEditGuy.add(editNameOption(personne));
+		menuEditGuy.add(editLastNameOption(personne));
+		menuEditGuy.add(editMailOption(personne));
 		menuEditGuy.addBack("b");
 		return menuEditGuy;
 	}
 	
-	public Option editNameOption() {
-		return new Option("Editer le nom", "1", editNameAction());
+	public Option editNameOption(Personne personne) {
+		return new Option("Editer le nom", "n", editNameAction(personne));
 	}
 	
-	public Action editNameAction() {
+	public Action editNameAction(Personne personne) {
 		return new Action () {
 			public void optionSelected() {
-				String mailPersonne = InOut.getString("Mail : ");
-				String nomPersonne = null;
-				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
 				
-				for(Personne p : listGuys) {
-					
-					if(p.getMail().equals(mailPersonne)) {
-						nomPersonne = p.getNom();
-						String prenomPersonne = p.getPrenom();
-						System.out.println("Vous vous apprêtez à modifier : " + nomPersonne + " " + prenomPersonne);
-						nomPersonne  = InOut.getString("Entrer le nouveau nom : ");
-						String checkEdit = InOut.getString(nomPersonne + " " + prenomPersonne + ", vous validez la modification ? (Y/N) ");
+				System.out.println("Vous vous apprêtez à modifier : " + personne.getNom() + " " + personne.getPrenom());
+				String newName  = InOut.getString("Entrer le nouveau nom : ");
+				String checkEdit = InOut.getString(newName + " " + personne.getPrenom() + ", vous validez la modification ? (Y/N) ");
 
-						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
-							p.setNom(nomPersonne);
-							System.out.println(nomPersonne + " " + prenomPersonne + ", le nom a bien était modifié");
-							autoSave();
-							break;
-						}
-						else {
-							System.out.println("Une erreur a eu lieu lors du changement de nom");
-							break;
-						}
-					}
+				if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
+					personne.setNom(newName);
+					System.out.println("Le nom a bien était modifié");
+				}
+				else {
+					System.out.println("Vous avez abandonné l'édition du nom");
 				}
 			}
 		};
 	}
 	
-	public Option editLastNameOption() {
-		return new Option("Editer le prenom", "2", editLastNameAction());
+	public Option editLastNameOption(Personne personne) {
+		return new Option("Editer le prenom", "p", editLastNameAction(personne));
 	}
 	
-	public Action editLastNameAction() {
+	public Action editLastNameAction(Personne personne) {
 		return new Action () {
 			public void optionSelected() {
-				String mailPersonne = InOut.getString("Mail : ");
-				String prenomPersonne = null;
-				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
-				
-				for(Personne p : listGuys) {
-					
-					if(p.getMail().equals(mailPersonne)) {
-						prenomPersonne = p.getPrenom();
-						String nomPersonne = p.getNom();
-						System.out.println("Vous vous apprêtez à modifier : " + nomPersonne + " " + prenomPersonne);
-						prenomPersonne  = InOut.getString("Entrer le nouveau prenom : ");
-						String checkEdit = InOut.getString(nomPersonne + " " + prenomPersonne + ", vous validez la modification ? (Y/N) ");
 
-						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
-							p.setPrenom(prenomPersonne);
-							System.out.println(nomPersonne + " " + prenomPersonne + ", le prenom a bien était modifié");
-							autoSave();
-							break;
-						}
-						else {
-							break;
-						}
-					}
+				System.out.println("Vous vous apprêtez à modifier : " + personne.getNom() + " " + personne.getPrenom());
+				String newLastName  = InOut.getString("Entrer le nouveau nom : ");
+				String checkEdit = InOut.getString(personne.getNom() + " " + newLastName + ", vous validez la modification ? (Y/N) ");
+
+				if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
+					personne.setPrenom(newLastName);
+					System.out.println("Le prenom a bien était modifié");
+				}
+				else {
+					System.out.println("Vous avez abandonné l'édition du prénom");
 				}
 			}
 		};
 	}
 	
-	public Option editMailOption() {
-		return new Option("Editer le mail", "3", editMailAction());
+	public Option editMailOption(Personne personne) {
+		return new Option("Editer le mail", "m", editMailAction(personne));
 	}
 	
-	public Action editMailAction() {
+	public Action editMailAction(Personne personne) {
 		return new Action () {
 			public void optionSelected() {
-				String mailPersonne = InOut.getString("Mail : ");
-				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
-				
-				for(Personne p : listGuys) {
-					
-					if(p.getMail().equals(mailPersonne)) {
-						String nomPersonne = p.getNom();
-						String prenomPersonne = p.getPrenom();
-						System.out.println("Vous vous apprêtez le mail de " + nomPersonne + " " + prenomPersonne);
-						mailPersonne  = InOut.getString("Entrer le nouveau mail : ");
-						String checkEdit = InOut.getString(mailPersonne + ", vous validez la modification ? (Y/N) ");
+				System.out.println("Vous vous apprêtezle mail de " + personne.getNom() + " " + personne.getPrenom());
+				String newMail  = InOut.getString("Entrer le nouveau mail : ");
+				String checkEdit = InOut.getString(newMail + ", vous validez la modification ? (Y/N) ");
 
-						if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
-							p.setMail(mailPersonne);
-							System.out.println("Le mail de : " + nomPersonne + " " + prenomPersonne + "a bien été modifié");
-							autoSave();
-							break;
-						}
-						else {
-							break;
-						}
-					}
+				if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
+					personne.setMail(newMail);
+					System.out.println("Le mail a bien était modifié");
+				}
+				else {
+					System.out.println("Vous avez abandonné l'édition du mail");
 				}
 			}
 		};
-	}
-	
-	private Option selectGuysOption() {
-		Menu selectGuys = new Menu("Selectionner un sportif", "3");
-		return SelectGuysOption  ();
 	}
 }
