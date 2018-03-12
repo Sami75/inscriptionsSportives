@@ -68,10 +68,11 @@ public class InscriptionsSportiveConsole {
 		
 		menuCompetition.add(createCompetOption());
 		menuCompetition.add(listCompetOption());
-		menuCompetition.add(addTeamInCompetOption());
-		menuCompetition.add(addGuyInCompetOption());
-		menuCompetition.add(editNameCompetOption());
-		menuCompetition.add(menuRemove());
+//		menuCompetition.add(addTeamInCompetOption());
+//		menuCompetition.add(addGuyInCompetOption());
+//		menuCompetition.add(editNameCompetOption());
+//		menuCompetition.add(menuRemove());
+		menuCompetition.add(selectCompet());
 		menuCompetition.addBack("b");
 		return menuCompetition;
 	}
@@ -114,6 +115,20 @@ public class InscriptionsSportiveConsole {
 				System.out.println(inscriptions.getCompetitions());
 			}
 		};
+	}
+	
+	private List<Competition> selectCompet() {
+		return new List<Competition>("Sélectionner une compétition", "e",
+				() -> new ArrayList<>(inscriptions.getCompetitions()),
+				(element) -> menuSelectCompet(element)
+				);
+	}
+	
+	public Menu menuSelectCompet(Competition competition) {
+		Menu selectCompet = new Menu("Compétition : " + competition.getNom());
+		selectCompet.add(menuRemove(competition));
+		selectCompet.addBack("b");
+		return selectCompet;
 	}
 	
 	public Option addTeamInCompetOption() {
@@ -380,7 +395,7 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
-	private Menu menuRemove() {
+	private Menu menuRemove(Competition competition) {
 		Menu menuRemove = new Menu("Menu Suppression", "6");
 		menuRemove.add(removeCompetOption());
 		menuRemove.add(removeGuyOrTeamOfCompetOption());
@@ -502,8 +517,6 @@ public class InscriptionsSportiveConsole {
 		Menu menuPersonne = new Menu("Menu Personne", "3");
 		menuPersonne.add(addAGuyOption());
 		menuPersonne.add(listGuysOption());
-//		menuPersonne.add(removeGuyOption());
-//		menuPersonne.add(menuEditGuy());
 		menuPersonne.add(selectGuys());
 		menuPersonne.add(autoSaveOption());
 		menuPersonne.addBack("b");
