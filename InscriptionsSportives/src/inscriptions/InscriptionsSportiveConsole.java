@@ -20,7 +20,6 @@ public class InscriptionsSportiveConsole {
 	private Competition createdCompet;
 	private Equipe createdTeam;
 	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-	
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
 		InscriptionsSportiveConsole.inscriptions = inscriptions;
