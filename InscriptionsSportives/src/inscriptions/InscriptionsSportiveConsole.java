@@ -182,6 +182,7 @@ public class InscriptionsSportiveConsole {
 				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
 				String nameGuy = null;
 				
+				
 				do {
 				
 					for(Competition co : listCompet) {
