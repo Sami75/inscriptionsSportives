@@ -68,11 +68,8 @@ public class InscriptionsSportiveConsole {
 		
 		menuCompetition.add(createCompetOption());
 		menuCompetition.add(listCompetOption());
-//		menuCompetition.add(addTeamInCompetOption());
-//		menuCompetition.add(addGuyInCompetOption());
-//		menuCompetition.add(editNameCompetOption());
-//		menuCompetition.add(menuRemove());
 		menuCompetition.add(selectCompet());
+		menuCompetition.add(autoSaveOption());
 		menuCompetition.addBack("b");
 		return menuCompetition;
 	}
@@ -126,84 +123,78 @@ public class InscriptionsSportiveConsole {
 	
 	public Menu menuSelectCompet(Competition competition) {
 		Menu selectCompet = new Menu("Compétition : " + competition.getNom());
+		selectCompet.add(menuAdd(competition));
+		selectCompet.add(editNameCompetOption(competition));
 		selectCompet.add(menuRemove(competition));
 		selectCompet.addBack("b");
 		return selectCompet;
 	}
 	
-	public Option addTeamInCompetOption() {
-		return new Option("Ajouter une équipe dans une compétition", "3", addTeamInCompetAction());
+	private Menu menuAdd(Competition competition) {
+		Menu menuAdd = new Menu("Menu Inscription", "i");
+		menuAdd.add(addTeamInCompetOption(competition));
+		menuAdd.add(addGuyInCompetOption(competition));
+		menuAdd.addBack("b");
+		return menuAdd;
 	}
 	
-	private Action addTeamInCompetAction() {
-		return new Action () {
-			public void optionSelected() {
-				
-				String nameCompet = InOut.getString("Entrer le nom de la compétition : ");
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Competition> listCompet = inscriptions.getCompetitions();
-				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
-				String nameTeam = null;
-				
-				do {
-				
-					for(Competition co : listCompet) {
-						if(co.getNom().equals(nameCompet)) {
-							nameTeam = InOut.getString("Entrer le nom d'une équipe : ");
-							for(Candidat c : listTeams) {
-								if(c.getNom().equals(nameTeam)) {
-									for(Equipe t : listTeam) {
-										if(t.toString().equals(c.toString())) {
-											co.add(t);
-											System.out.println(nameTeam + "est inscrite dans la compétition " + nameCompet);
-										}
-									}
-								}
-							}
-						}
-					}
-				
-				}while(!nameTeam.equals("stop"));
-				
-			}
-		};
+	public Option addTeamInCompetOption(Competition competition) {
+		return new List <Equipe>("Sélection de l'équipe", "e",
+				() -> new ArrayList<>(inscriptions.getEquipes()),
+				(element) -> addTeamInCompet(competition, element) 
+			);
 	}
 	
-	public Option addGuyInCompetOption() {
-		return new Option("Ajouter un sportif dans une compétition", "4", addGuyInCompetAction());
+	public Option addTeamInCompet(Competition competition, Equipe equipe) {
+		return new Option ("Inscrire " + equipe.getNom() + " dans la compétition : " + competition.getNom(), "a",
+				() -> {competition.add(equipe); System.out.println(equipe.getNom() + " a était inscrit dans la compétition : " + competition.getNom());}
+				);
 	}
 	
-	private Action addGuyInCompetAction() {
-		return new Action () {
-			public void optionSelected() {
-				String nameCompet = InOut.getString("Entrer le nom de la compétition : ");
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Competition> listCompet = inscriptions.getCompetitions();
-				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
-				String nameGuy = null;
-				
-				
-				do {
-				
-					for(Competition co : listCompet) {
-						if(co.getNom().equals(nameCompet)) {
-							nameGuy = InOut.getString("Entrer le nom d'un sportif : ");
-							for(Candidat c : listTeams) {
-								if(c.getNom().equals(nameGuy)) {
-									for(Personne p : listGuys) {
-										if(p.getNom().equals(nameGuy)) {
-											co.add(p);
-											System.out.println(nameGuy + "est inscrite dans la compétition " + nameCompet);
-										}
-									}
-								}
-							}
-						}
-					}
-				
-				}while(!nameGuy.equals("stop"));
-			}
-		};
+	public Option addGuyInCompetOption(Competition competition) {
+		return new List <Personne>("Sélection du sportif", "s",
+				() -> new ArrayList<>(inscriptions.getPersonnes()),
+				(element) -> addGuyInCompet(competition, element) 
+			);
+	}
+	
+	public Option addGuyInCompet(Competition competition, Personne personne) {
+		return new Option ("Inscrire " + personne.getNom() + " " + personne.getPrenom() + " dans la compétition : " + competition.getNom(), "a",
+				() -> {competition.add(personne); System.out.println(personne.getNom() + " " + personne.getPrenom() + " a était inscrit dans la compétition : " + competition.getNom());}
+				);
+	}
+	
+	public Option editNameCompetOption(Competition competition) {
+		return new Option("Renommer une compétition", "r", 
+				() -> {String newName = InOut.getString("Entrer le nouveau nom de la compétition : "); competition.setNom(newName); System.out.println("La compétition à bien était renommé");}
+				);
+	}
+	
+	private Menu menuRemove(Competition competition) {
+		Menu menuRemove = new Menu("Menu Suppression", "s");
+		menuRemove.add(removeCompetOption(competition));
+		menuRemove.add(removeGuyOrTeamOfCompetOption(competition));
+		menuRemove.addBack("b");
+		return menuRemove;
+	}
+	
+	public Option removeCompetOption(Competition competition) {
+		return new Option("Supprimer la compétition : " + competition.getNom(), "r",
+				() -> {competition.delete(); System.out.println("La competition a bien était supprimée");}
+				);
+	}
+
+	public Option removeGuyOrTeamOfCompetOption(Competition competition) {
+		return new List<Candidat>("Selectionner l'équipe ou le sportif a supprimer de la compétition : " + competition.getNom(), "d",
+				() -> new ArrayList<>(competition.getCandidats()),
+				(element) -> removeGuyOrTeamOfCompetAction(competition, element)
+				);
+	}
+
+	private Option removeGuyOrTeamOfCompetAction(Competition competition, Candidat candidat) {
+		return new Option("Supprimer " + candidat.getNom() + " de " + competition.getNom(), "s",
+				() -> {competition.remove(candidat); System.out.println(candidat.getNom() + " a bien était supprimé(e) de la compétition : " + competition.getNom());}
+				);
 	}
 	
 	private Menu menuEquipe() {
@@ -369,110 +360,7 @@ public class InscriptionsSportiveConsole {
 			}
 		};
 	}
-	
-	public Option editNameCompetOption() {
-		return new Option("Editer le nom d'une compétition", "5", editNameCompetAction());
-	}
-	
-	private Action editNameCompetAction() {
-		return new Action() {
-			public void optionSelected() {
-				SortedSet <Competition> listCompets = inscriptions.getCompetitions();
-				String nameCompet = InOut.getString("Enter le nom de la compétition : ");
-				
-				for(Competition co : listCompets) {
-					if(co.getNom().equals(nameCompet)) {
-						String newName = InOut.getString("Entrer le nouveau nom : ");
-						co.setNom(newName);
-						break;
-					}
-					else {
-						System.out.println("Il y a eu une erreur lors du changement de nom, la compétition n'existe pas.");
-						break;
-					}
-				}
-			
-			}
-		};
-	}
-	
-	private Menu menuRemove(Competition competition) {
-		Menu menuRemove = new Menu("Menu Suppression", "6");
-		menuRemove.add(removeCompetOption());
-		menuRemove.add(removeGuyOrTeamOfCompetOption());
-		menuRemove.addBack("b");
-		return menuRemove;
-	}
-	
-	public Option removeCompetOption() {
-		return new Option("Supprimer une compétition", "1", removeCompetAction());
-	}
 
-	private Action removeCompetAction() {
-		return new Action() {
-			public void optionSelected() {
-				SortedSet <Competition> listCompets = inscriptions.getCompetitions();
-				String nameCompet = InOut.getString("Entrer une compétition : ");
-				boolean deleteSuccess = false;
-				
-				for(Competition co : listCompets) {
-					if(co.getNom().equals(nameCompet)) {
-						co.delete();
-						System.out.println(nameCompet +  ", a bien était supprimée.");
-						deleteSuccess = true;
-						break;
-					}
-				}
-				
-				if(!deleteSuccess) {
-					System.out.println("La suppression a échoué, car la compétition n'existe pas.");
-					
-				}
-			}		
-	
-		};
-		
-	}
-	
-	public Option removeGuyOrTeamOfCompetOption() {
-		return new Option("Supprimer des sportifs ou des équipes d'une compétition", "2", removeGuyOrTeamOfCompetAction());
-	}
-
-	private Action removeGuyOrTeamOfCompetAction() {
-		return new Action() {
-			public void optionSelected() {
-				SortedSet <Competition> listCompets = inscriptions.getCompetitions();
-				SortedSet <Candidat> listCandidats = inscriptions.getCandidats();
-				String nameCompet = InOut.getString("Entrer une compétition : ");
-				String nameCandidat = null;
-				boolean deleteSuccess = false;
-				
-				do {
-					
-					for(Competition co : listCompets) {
-						if(co.getNom().equals(nameCompet)) {
-							nameCandidat = InOut.getString("Entrer le nom du sportif ou d'une équipe : ");
-							for(Candidat c : listCandidats) {
-								if(c.getNom().equals(nameCandidat)) {
-									co.remove(c);
-									System.out.println(nameCandidat +  ", a bien était supprimée.");
-									deleteSuccess = true;
-									break;
-								}
-							}
-						}
-					}
-					
-					if(!deleteSuccess) {
-						System.out.println("La suppression a échoué, car le sportif n'existe pas ou n'est pas inscrit dans la compétition.");			
-					}
-					
-				}while(!nameCandidat.equals("stop"));
-			}		
-	
-		};
-	}
-	
 	public Option addAGuyInTeamOption() {
 		return new Option("Ajouter un sportif dans une équipe", "7", addAGuyInTeamAction());
 	}
