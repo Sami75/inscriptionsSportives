@@ -700,6 +700,6 @@ public class InscriptionsSportiveConsole {
 	
 	private Option selectGuysOption() {
 		Menu selectGuys = new Menu("Selectionner un sportif", "3");
-		return SelectGuysOption();
+		return SelectGuysOption  ();
 	}
 }
