@@ -698,8 +698,8 @@ public class InscriptionsSportiveConsole {
 		};
 	}
 	
-	private Menu menuSelectGuys() {
+	private Option selectGuysOption() {
 		Menu selectGuys = new Menu("Selectionner un sportif", "3");
-		return menuSelectGuys();
+		return SelectGuysOption();
 	}
 }
