@@ -235,10 +235,8 @@ public class InscriptionsSportiveConsole {
 		menuEquipe.add(createTeamOption());
 		menuEquipe.add(listTeamOption());
 		menuEquipe.add(selectTeam());
-		menuEquipe.add(editNameTeamOption());
-		menuEquipe.add(removeGuyOfTeamOption());
-		menuEquipe.add(addAGuyInTeamOption());
 		menuEquipe.add(autoSaveOption());
+		
 		menuEquipe.addBack("b");
 		return menuEquipe;
 	}
@@ -281,12 +279,14 @@ public class InscriptionsSportiveConsole {
 		Menu selectTeam = new Menu("Menu Equipe : " + equipe.getNom());
 		selectTeam.add(listMemberTeamOption(equipe));
 		selectTeam.add(removeTeamOption(equipe));
+		selectTeam.add(editNameTeamOption(equipe));
+		selectTeam.add(selectGuy(equipe));
 		selectTeam.addBack("b");
 		return selectTeam;
 	}
 	
 	public Option listMemberTeamOption(Equipe equipe) {
-		return new Option("Lister les membres d'une équipe", "a",
+		return new Option("Lister les membres de " + equipe.getNom(), "a",
 				() -> {System.out.println(equipe.getMembres());}
 				);
 	}
@@ -297,110 +297,38 @@ public class InscriptionsSportiveConsole {
 				);
 	}
 	
-	public Option removeGuyOfTeamOption() {
-		return new Option("Supprimer un sportif d'une équipe", "s", removeGuyOfTeamAction());
+	public Option editNameTeamOption(Equipe equipe) {
+		return new Option("Editer le nom d'une équipe", "z",
+				() -> {String newName = InOut.getString("Entrer le nouveau nom de l'équipe : "); equipe.setNom(newName);}
+				);
 	}
 	
-	private Action removeGuyOfTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				String nameTeam = InOut.getString("Nom de l'équipe : ");
-				boolean deleteSuccess = false;
-				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet<Personne> listGuys = inscriptions.getPersonnes();
-				SortedSet<Equipe> listTeam = inscriptions.getEquipes();
-				String nomPersonne = null;
-				
-				do {
-					for(Candidat c : listTeams) {
-					
-						if(c.getNom().equals(nameTeam)) {
-							nomPersonne = InOut.getString("Entrer le nom du sportif à supprimer : ");
-							for(Personne p : listGuys) {
-								if(p.getNom().equals(nomPersonne)) {
-									for(Equipe t : listTeam) {
-										if(t.toString().equals(c.toString())) {
-											t.remove(p);
-											System.out.println(p.getNom() + " " + p.getPrenom() + ", a bien était supprimée de : " + c.getNom());
-											deleteSuccess = true;
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-				
-					if(!deleteSuccess) {
-						System.out.println("La suppression a échoué, car le sportif n'appartient pas  n'est pas répertoriée");
-					}
-				}while(!nomPersonne.equals("stop"));
-			}
-		};
+	private List<Personne> selectGuy(Equipe equipe)
+	{
+		return new List<Personne>("Selectionner un membre de " + equipe.getNom(), "m",
+				() -> new ArrayList<>(inscriptions.getPersonnes()),
+				(element) -> menuSelectGuy(equipe, element)
+				);
 	}
 	
-	public Option editNameTeamOption() {
-		return new Option("Editer le nom d'une équipe", "z", editNameTeamAction());
+	public Menu menuSelectGuy(Equipe equipe, Personne personne) 
+	{
+		Menu selectGuy = new Menu(personne.getNom() + " " + personne.getPrenom());
+		selectGuy.add(removeGuyOfTeamOption(equipe, personne));
+		selectGuy.add(addGuyInTeamOption(equipe, personne));
+		selectGuy.addBack("b");
+		return selectGuy;
 	}
-	
-	private Action editNameTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				String nameTeam = InOut.getString("Nom de l'équipe : ");
-				SortedSet<Candidat> listTeams = inscriptions.getCandidats();
-				
-				for(Candidat c : listTeams) {
-					
-					if(c.getNom().equals(nameTeam)) {
-						String newName = InOut.getString("Nouveau de l'équipe : ");
-						c.setNom(newName);
-						System.out.println("Le nouveau nom de l'équipe : " + nameTeam + "est : " + newName);
-						break;
-					}
-				}
-			}
-		};
+	public Option removeGuyOfTeamOption(Equipe equipe, Personne personne) {
+		return new Option("Supprimer " + personne.getNom() + " " + personne.getPrenom() + " de " + equipe.getNom(), "s",
+				() -> {equipe.remove(personne);}
+				);
 	}
 
-	public Option addAGuyInTeamOption() {
-		return new Option("Ajouter un sportif dans une équipe", "r", addAGuyInTeamAction());
-	}
-	
-	private Action addAGuyInTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				SortedSet <Candidat> listTeams = inscriptions.getCandidats();
-				SortedSet <Equipe> listTeam = inscriptions.getEquipes();
-				System.out.println(inscriptions.getEquipes());
-				String selectTeam = InOut.getString("Selectionner l'équipe : ");
-				String nomPersonne = null;
-				SortedSet <Personne> listGuys = inscriptions.getPersonnes();
-				System.out.println(inscriptions.getPersonnes());
-				
-				do {
-					nomPersonne = InOut.getString("Nom du sportif : ");
-					for(Candidat c : listTeams) {
-						if(c.getNom().equals(selectTeam)) {
-							for(Equipe t : listTeam) {
-								if(t.toString().equals(c.toString())) {
-									
-									for(Personne p : listGuys) {
-										if(p.getNom().equals(nomPersonne)) {
-											t.add(p);
-											System.out.println("Le sportif : " + p.getNom() + " " + p.getPrenom() + " a rejoint l'équipe " + c.getNom());
-										}
-									}
-								}
-								else {
-									System.out.println("Il y a eu une erreur lors de l'ajout du sportif dans l'équipe :" + c.getNom());
-								}
-							}
-							
-						}
-					}	
-				}while(!nomPersonne.equals("stop"));
-			}
-		};
+	public Option addGuyInTeamOption(Equipe equipe, Personne personne) {
+		return new Option("Ajouter un sportif dans une équipe", "r",
+				() -> {equipe.add(personne);}
+		);
 	}
 	
 	private Menu menuPersonne() {
@@ -415,22 +343,15 @@ public class InscriptionsSportiveConsole {
 	
 	public Option addAGuyOption() {
 		
-		return new Option("Ajouter un sportif", "c", addAGuyAction());
-	}
-	
-	private Action addAGuyAction() {
-		
-		return new Action ()
-		{
-			public void optionSelected()
-			{
-				String nomPersonne = InOut.getString("Nom : ");
-				String prenomPersonne = InOut.getString("Prenom : ");
-				String mailPersonne = InOut.getString("Mail : ");
-				Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
-				System.out.println(createdGuy.getNom() + " " + createdGuy.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + createdGuy.getMail());
-			}
-		};
+		return new Option("Ajouter un sportif", "c",
+				() -> {
+					String nomPersonne = InOut.getString("Nom : ");
+					String prenomPersonne = InOut.getString("Prenom : ");
+					String mailPersonne = InOut.getString("Mail : ");
+					Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
+					System.out.println(createdGuy.getNom() + " " + createdGuy.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + createdGuy.getMail());
+				}
+				);
 	}
 
 	public Option listGuysOption() {
@@ -479,70 +400,20 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option editNameOption(Personne personne) {
-		return new Option("Editer le nom", "n", editNameAction(personne));
-	}
-	
-	public Action editNameAction(Personne personne) {
-		return new Action () {
-			public void optionSelected() {
-				
-				System.out.println("Vous vous apprêtez à modifier : " + personne.getNom() + " " + personne.getPrenom());
-				String newName  = InOut.getString("Entrer le nouveau nom : ");
-				String checkEdit = InOut.getString(newName + " " + personne.getPrenom() + ", vous validez la modification ? (Y/N) ");
-
-				if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
-					personne.setNom(newName);
-					System.out.println("Le nom a bien était modifié");
-				}
-				else {
-					System.out.println("Vous avez abandonné l'édition du nom");
-				}
-			}
-		};
+		return new Option("Editer le nom", "n",
+				() -> {String newName = InOut.getString("Entrer le nouveau nom : "); personne.setNom(newName); System.out.println("Le nom a bien été modifié");}
+				);
 	}
 	
 	public Option editLastNameOption(Personne personne) {
-		return new Option("Editer le prenom", "p", editLastNameAction(personne));
-	}
-	
-	public Action editLastNameAction(Personne personne) {
-		return new Action () {
-			public void optionSelected() {
-
-				System.out.println("Vous vous apprêtez à modifier : " + personne.getNom() + " " + personne.getPrenom());
-				String newLastName  = InOut.getString("Entrer le nouveau nom : ");
-				String checkEdit = InOut.getString(personne.getNom() + " " + newLastName + ", vous validez la modification ? (Y/N) ");
-
-				if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
-					personne.setPrenom(newLastName);
-					System.out.println("Le prenom a bien était modifié");
-				}
-				else {
-					System.out.println("Vous avez abandonné l'édition du prénom");
-				}
-			}
-		};
+		return new Option("Editer le prenom", "p",
+				() -> {String newName = InOut.getString("Entrer le nouveau prenom : "); personne.setPrenom(newName); System.out.println("Le prenom a bien été modifié");}
+				);
 	}
 	
 	public Option editMailOption(Personne personne) {
-		return new Option("Editer le mail", "m", editMailAction(personne));
-	}
-	
-	public Action editMailAction(Personne personne) {
-		return new Action () {
-			public void optionSelected() {
-				System.out.println("Vous vous apprêtezle mail de " + personne.getNom() + " " + personne.getPrenom());
-				String newMail  = InOut.getString("Entrer le nouveau mail : ");
-				String checkEdit = InOut.getString(newMail + ", vous validez la modification ? (Y/N) ");
-
-				if(checkEdit.equals("y") || checkEdit.equals("Y") || checkEdit.equals("o") || checkEdit.equals("O")) {
-					personne.setMail(newMail);
-					System.out.println("Le mail a bien était modifié");
-				}
-				else {
-					System.out.println("Vous avez abandonné l'édition du mail");
-				}
-			}
-		};
+		return new Option("Editer le mail", "m",
+				() -> {String newMail = InOut.getString("Entrer le nouveaul mail de " + personne.getNom() + " " + personne.getPrenom() + " : "); personne.setMail(newMail); System.out.println("Le mail de " + personne.getNom() + " " + personne.getPrenom() + " a bien été changé");}
+				);
 	}
 }
