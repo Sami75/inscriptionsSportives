@@ -1,4 +1,4 @@
-package inscriptions;
+package MenuInscriptions;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,6 +15,11 @@ import commandLineMenus.List;
 import commandLineMenus.Menu;
 import commandLineMenus.Option;
 import commandLineMenus.rendering.examples.util.InOut;
+import inscriptions.Candidat;
+import inscriptions.Competition;
+import inscriptions.Equipe;
+import inscriptions.Inscriptions;
+import inscriptions.Personne;
 
 public class InscriptionsSportiveConsole {
 
@@ -280,6 +285,7 @@ public class InscriptionsSportiveConsole {
 		selectTeam.add(listMemberTeamOption(equipe));
 		selectTeam.add(removeTeamOption(equipe));
 		selectTeam.add(editNameTeamOption(equipe));
+		selectTeam.add(selectMember(equipe));
 		selectTeam.add(selectGuy(equipe));
 		selectTeam.addBack("b");
 		return selectTeam;
@@ -303,9 +309,31 @@ public class InscriptionsSportiveConsole {
 				);
 	}
 	
-	private List<Personne> selectGuy(Equipe equipe)
+	private List<Personne> selectMember(Equipe equipe)
 	{
 		return new List<Personne>("Selectionner un membre de " + equipe.getNom(), "m",
+				() -> new ArrayList<>(equipe.getMembres()),
+				(element) -> menuSelectMember(equipe, element)
+				);
+	}
+	
+	public Menu menuSelectMember(Equipe equipe, Personne personne) 
+	{
+		Menu selectMember = new Menu(personne.getNom() + " " + personne.getPrenom());
+		selectMember.add(removeGuyOfTeamOption(equipe, personne));
+		selectMember.addBack("b");
+		return selectMember;
+	}
+	
+	public Option removeGuyOfTeamOption(Equipe equipe, Personne personne) {
+		return new Option("Supprimer " + personne.getNom() + " " + personne.getPrenom() + " de " + equipe.getNom(), "s",
+				() -> {equipe.remove(personne);}
+				);
+	}
+	
+	private List<Personne> selectGuy(Equipe equipe)
+	{
+		return new List<Personne>("Selectionner une personne a ajouter à " + equipe.getNom(), "p",
 				() -> new ArrayList<>(inscriptions.getPersonnes()),
 				(element) -> menuSelectGuy(equipe, element)
 				);
@@ -314,17 +342,11 @@ public class InscriptionsSportiveConsole {
 	public Menu menuSelectGuy(Equipe equipe, Personne personne) 
 	{
 		Menu selectGuy = new Menu(personne.getNom() + " " + personne.getPrenom());
-		selectGuy.add(removeGuyOfTeamOption(equipe, personne));
 		selectGuy.add(addGuyInTeamOption(equipe, personne));
 		selectGuy.addBack("b");
 		return selectGuy;
 	}
-	public Option removeGuyOfTeamOption(Equipe equipe, Personne personne) {
-		return new Option("Supprimer " + personne.getNom() + " " + personne.getPrenom() + " de " + equipe.getNom(), "s",
-				() -> {equipe.remove(personne);}
-				);
-	}
-
+	
 	public Option addGuyInTeamOption(Equipe equipe, Personne personne) {
 		return new Option("Ajouter un sportif dans une équipe", "r",
 				() -> {equipe.add(personne);}
@@ -370,7 +392,7 @@ public class InscriptionsSportiveConsole {
 	
 	private List<Personne> selectGuys()
 	{
-		return new List<Personne>("Sélectionner une personne", "e", 
+		return new List<Personne>("Sélectionner une personne", "e",
 				() -> new ArrayList<>(inscriptions.getPersonnes()),
 				(element) -> menuSelectGuy(element)
 				);
