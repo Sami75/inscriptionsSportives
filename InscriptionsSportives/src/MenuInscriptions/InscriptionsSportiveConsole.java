@@ -190,8 +190,9 @@ public class InscriptionsSportiveConsole {
 	public Option removeCompetOption(Competition competition) {
 		return new Option("Supprimer la compétition : " + competition.getNom(), "r",
 				() -> {
-					if(!competition.getCandidats().isEmpty()){
-						competition.delete(); System.out.println("La competition a bien était supprimée");
+					if(competition.getCandidats().isEmpty()){
+						competition.delete();
+						System.out.println("La competition a bien était supprimée");
 					}
 					else {
 						System.out.println("La compétition n'est pas vide ! Veuillez supprimer les candidats incrits dans la compétition !");
@@ -229,9 +230,17 @@ public class InscriptionsSportiveConsole {
 	public Option editDateEnd(Competition competition) {
 		return new Option("Repousser la date de clôture", "d",
 				() -> {
-					String dateCloture = InOut.getString("Entrer la nouvelle date de clôture : ");
-					final LocalDate localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
-					competition.setDateCloture(localDate);
+					LocalDate localDate = null;
+					
+					do {
+						try {
+							String dateCloture = InOut.getString("Entrer la nouvelle date de clôture (dd-mm-yyyy) : ");
+							localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+							competition.setDateCloture(localDate);
+						} catch(DateTimeParseException e) {
+							System.out.println("Veuillez respecter le format de la date 'dd-mm-yyyy' ! " + e);
+						}
+					}while(localDate == null);
 					System.out.println("La date a bien était repoussée");
 				}
 				);
