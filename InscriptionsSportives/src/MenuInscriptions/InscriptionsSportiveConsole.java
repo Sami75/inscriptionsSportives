@@ -3,10 +3,7 @@ package MenuInscriptions;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.SortedSet;
-
-import com.sun.javafx.geom.transform.GeneralTransform3D;
+import java.time.format.DateTimeParseException;
 
 import java.util.ArrayList;
 
@@ -24,9 +21,6 @@ import inscriptions.Personne;
 public class InscriptionsSportiveConsole {
 
 	private static Inscriptions inscriptions;
-	private Personne createdGuy;
-	private Competition createdCompet;
-	private Equipe createdTeam;
 	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
@@ -88,9 +82,19 @@ public class InscriptionsSportiveConsole {
 	private Action createCompetAction() {
 		return new Action() {
 			public void optionSelected() {
+				
+				LocalDate localDate = null;
+				
 				String nomCompet = InOut.getString("Entrer le nom de la compétition : ");
-				String dateCloture = InOut.getString("Entrer la date de clôture : ");
-				final LocalDate localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+				
+				do {
+					try {
+						String dateCloture = InOut.getString("Entrer la date de clôture (dd-mm-yyyy) : ");
+						localDate = LocalDate.parse(dateCloture, DATE_FORMAT);
+					} catch(DateTimeParseException e) {
+						System.out.println("Veuillez respecter le format de la date 'dd-mm-yyyy' ! " + e);
+					}
+				}while(localDate == null);
 				
 				String teamOrNotTeam = null;
 				boolean enEquipe = false;
@@ -101,22 +105,16 @@ public class InscriptionsSportiveConsole {
 				
 				enEquipe = teamOrNotTeam.equals("equipe");
 				
-				Competition createdCompet = inscriptions.createCompetition(nomCompet, localDate, enEquipe);
+				inscriptions.createCompetition(nomCompet, localDate, enEquipe);
 				System.out.println("La compétition, " + nomCompet + " a était créée avec succés");
 			}
 		};
 	}
 	
 	public Option listCompetOption() {
-		return new Option("Lister les compétitions", "a", listCompetAction());
-	}
-	
-	private Action listCompetAction() {
-		return new Action() {
-			public void optionSelected() {
-				System.out.println(inscriptions.getCompetitions());
-			}
-		};
+		return new Option("Lister les compétitions", "a",
+				() -> {System.out.println(inscriptions.getCompetitions());}
+		);
 	}
 	
 	private List<Competition> selectCompet() {
@@ -139,8 +137,12 @@ public class InscriptionsSportiveConsole {
 	
 	private Menu menuAdd(Competition competition) {
 		Menu menuAdd = new Menu("Menu Inscription", "i");
-		menuAdd.add(addTeamInCompetOption(competition));
-		menuAdd.add(addGuyInCompetOption(competition));
+		if(competition.estEnEquipe()) {
+			menuAdd.add(addTeamInCompetOption(competition));
+		}
+		else {
+			menuAdd.add(addGuyInCompetOption(competition));
+		}
 		menuAdd.addBack("b");
 		return menuAdd;
 	}
@@ -148,7 +150,7 @@ public class InscriptionsSportiveConsole {
 	public Option addTeamInCompetOption(Competition competition) {
 		return new List <Equipe>("Sélection de l'équipe", "e",
 				() -> new ArrayList<>(inscriptions.getEquipes()),
-				(element) -> addTeamInCompet(competition, element) 
+				(element) -> addTeamInCompet(competition, element)
 			);
 	}
 	
@@ -247,29 +249,17 @@ public class InscriptionsSportiveConsole {
 	}
 	
 	public Option createTeamOption() {
-		return new Option("Créer une équipe", "c", createTeamAction());
-	}
-	
-	private Action createTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				String nomEquipe = InOut.getString("Entrer le nom de l'équipe : ");
-				Equipe createdTeam = inscriptions.createEquipe (nomEquipe);
-				System.out.println("L'équipe, " + nomEquipe + " a était créée avec succés");
-			}
-		};
+		return new Option("Créer une équipe", "c",
+				() -> {String nomEquipe = InOut.getString("Entrer le nom de l'équipe : ");
+				inscriptions.createEquipe (nomEquipe);
+				System.out.println("L'équipe, " + nomEquipe + " a était créée avec succés");}
+				);
 	}
 	
 	public Option listTeamOption() {
-		return new Option("Lister les équipes", "a", listTeamAction());
-	}
-	
-	private Action listTeamAction() {
-		return new Action() {
-			public void optionSelected() {
-				System.out.println(inscriptions.getEquipes());
-			}
-		};
+		return new Option("Lister les équipes", "a",
+				() -> {System.out.println(inscriptions.getEquipes());}
+		);
 	}
 	
 	private List<Equipe> selectTeam()
@@ -378,16 +368,9 @@ public class InscriptionsSportiveConsole {
 
 	public Option listGuysOption() {
 		
-		return new Option("Lister les sportifs", "a", listGuysAction());
-	}
-
-	private Action listGuysAction() {
-		
-		return new Action() {
-			public void optionSelected() {
-				System.out.println(inscriptions.getPersonnes());
-			}
-		};
+		return new Option("Lister les sportifs", "a",
+				() -> {System.out.println(inscriptions.getPersonnes());}
+		);
 	}
 	
 	private List<Personne> selectGuys()
