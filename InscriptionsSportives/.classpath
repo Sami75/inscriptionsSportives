@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/CommandLine"/>
 	<classpathentry kind="lib" path="/CoursJava/lib/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="/CoursJava/lib/commandLineMenus.jar"/>
-	<classpathentry kind="lib" path="/CoursJava/lib/commandLineMenus.jardesc"/>
 	<classpathentry kind="lib" path="/CoursJava/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="/CoursJava/lib/hibernate-commons-annotations-4.0.4.Final.jar"/>
 	<classpathentry kind="lib" path="/CoursJava/lib/hibernate-core-4.3.4.Final.jar"/>
