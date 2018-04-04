@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
 import java.util.ArrayList;
 
 import commandLineMenus.Action;
@@ -12,11 +11,14 @@ import commandLineMenus.List;
 import commandLineMenus.Menu;
 import commandLineMenus.Option;
 import commandLineMenus.rendering.examples.util.InOut;
+
 import inscriptions.Candidat;
 import inscriptions.Competition;
 import inscriptions.Equipe;
 import inscriptions.Inscriptions;
 import inscriptions.Personne;
+
+import back.Passerelle;
 
 public class InscriptionsSportiveConsole {
 
@@ -24,7 +26,7 @@ public class InscriptionsSportiveConsole {
 	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
-		InscriptionsSportiveConsole.inscriptions = inscriptions;
+		this.inscriptions = inscriptions;
 	}
 	
 	public Option autoSaveOption() {
@@ -370,6 +372,7 @@ public class InscriptionsSportiveConsole {
 					String prenomPersonne = InOut.getString("Prenom : ");
 					String mailPersonne = InOut.getString("Mail : ");
 					Personne createdGuy = inscriptions.createPersonne(nomPersonne, prenomPersonne, mailPersonne);
+					Passerelle.save(createdGuy);
 					System.out.println(createdGuy.getNom() + " " + createdGuy.getPrenom() + ", a était créé(e) avec succés" + " son mail est : " + createdGuy.getMail());
 				}
 				);

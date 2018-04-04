@@ -4,26 +4,57 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.SortNatural;
+
 /**
- * Représente une personne physique pouvant s'inscrire à une compétition.
+ * Reprï¿½sente une personne physique pouvant s'inscrire ï¿½ une compï¿½tition.
  */
 
+@Entity
 public class Personne extends Candidat
 {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+	
+	private String prenom;
+	
+	private String nom;
+	
+	private String mail;
+
 	private static final long serialVersionUID = 4434646724271327254L;
-	private String prenom, mail;
+	
+	@OneToMany(mappedBy = "personne")
+	@Cascade(value = { CascadeType.ALL })
+	@SortNatural
 	private Set<Equipe> equipes;
+	
+	@ManyToOne
+	@Cascade(value = { CascadeType.SAVE_UPDATE})
+	private Equipe equipe;
 	
 	Personne(Inscriptions inscriptions, String nom, String prenom, String mail)
 	{
 		super(inscriptions, nom);
 		this.prenom = prenom;
 		this.mail = mail;
+		this.nom  = nom;
 		equipes = new TreeSet<>();
 	}
 
 	/**
-	 * Retourne le prénom de la personne.
+	 * Retourne le prï¿½nom de la personne.
 	 * @return
 	 */
 	
@@ -33,7 +64,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Modifie le prénom de la personne.
+	 * Modifie le prï¿½nom de la personne.
 	 * @param prenom
 	 */
 	
@@ -43,7 +74,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Retourne l'adresse électronique de la personne.
+	 * Retourne l'adresse ï¿½lectronique de la personne.
 	 * @return
 	 */
 	
@@ -53,7 +84,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Modifie l'adresse électronique de la personne.
+	 * Modifie l'adresse ï¿½lectronique de la personne.
 	 * @param mail
 	 */
 	
@@ -63,7 +94,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Retoure les équipes dont cette personne fait partie.
+	 * Retoure les ï¿½quipes dont cette personne fait partie.
 	 * @return
 	 */
 	

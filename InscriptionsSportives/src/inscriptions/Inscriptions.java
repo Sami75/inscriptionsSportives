@@ -8,13 +8,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import MenuInscriptions.InscriptionsSportiveConsole;
-import commandLineMenus.*;
-import commandLineMenus.rendering.examples.util.InOut;
+import back.Passerelle;
+
 
 /**
  * Point d'entr�e dans l'application, un seul objet de type Inscription
@@ -245,9 +244,12 @@ public class Inscriptions implements Serializable
 	
 	public static void main(String[] args)
 	{
-		
+		Passerelle back = new Passerelle();
+		back.open();
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		InscriptionsSportiveConsole inscriptionsSportiveConsole = new InscriptionsSportiveConsole(inscriptions);
 		inscriptionsSportiveConsole.start();
+		back.close();
+		
 	}
 }

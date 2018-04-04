@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 1 avr. 2018 19:33:29 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="JUnit.TestPersonne" table="TESTPERSONNE">
+        <id name="id" type="java.lang.Long">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="inscriptions" class="inscriptions.Inscriptions" access="field" fetch="join">
+            <column name="INSCRIPTIONS" />
+        </many-to-one>
+        <many-to-one name="foot" class="inscriptions.Competition" access="field" fetch="join">
+            <column name="FOOT" />
+        </many-to-one>
+        <many-to-one name="tony" class="inscriptions.Personne" access="field" fetch="join">
+            <column name="TONY" />
+        </many-to-one>
+        <many-to-one name="Martial" class="inscriptions.Personne" access="field" fetch="join">
+            <column name="MARTIAL" />
+        </many-to-one>
+        <many-to-one name="Rashford" class="inscriptions.Personne" access="field" fetch="join">
+            <column name="RASHFORD" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>
