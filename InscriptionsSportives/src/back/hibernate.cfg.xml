@@ -18,5 +18,7 @@
         	java:comp/UserTransaction</property>
         <mapping class="inscriptions.Personne" />
         <mapping class="inscriptions.Equipe" />	
+        <mapping class="inscriptions.Candidat" />	
+        <mapping class="inscriptions.Competition" />
     </session-factory>
 </hibernate-configuration>

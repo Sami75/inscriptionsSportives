@@ -6,20 +6,50 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.SortNatural;
+
 /**
  * Représente une compétition, c'est-à-dire un ensemble de candidats 
  * inscrits à un événement, les inscriptions sont closes à la date dateCloture.
  *
  */
-
+@Entity
 public class Competition implements Comparable<Competition>, Serializable
 {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+	
 	private static final long serialVersionUID = -2882150118573759729L;
+	
+	
 	private Inscriptions inscriptions;
+	
 	private String nom;
+
+	@OneToMany(mappedBy = "competition")
+	@Cascade(value = { CascadeType.ALL })
+	@SortNatural
 	private Set<Candidat> candidats;
+	
 	private LocalDate dateCloture;
+	
 	private boolean enEquipe = false;
+	
+	@ManyToOne
+	@Cascade(value = { CascadeType.SAVE_UPDATE})
+	private Candidat candidat;
+	
 
 	Competition(Inscriptions inscriptions, String nom, LocalDate dateCloture, boolean enEquipe)
 	{

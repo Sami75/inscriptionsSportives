@@ -8,8 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -22,21 +25,16 @@ import org.hibernate.annotations.SortNatural;
 
 @Entity
 public class Personne extends Candidat
-{
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+{	
 	
 	private String prenom;
-	
-	private String nom;
-	
+
 	private String mail;
 
 	private static final long serialVersionUID = 4434646724271327254L;
 	
-	@OneToMany(mappedBy = "personne")
-	@Cascade(value = { CascadeType.ALL })
+	@OneToMany(mappedBy="personne")
+	@Cascade(value = { CascadeType.ALL})
 	@SortNatural
 	private Set<Equipe> equipes;
 	
@@ -49,7 +47,6 @@ public class Personne extends Candidat
 		super(inscriptions, nom);
 		this.prenom = prenom;
 		this.mail = mail;
-		this.nom  = nom;
 		equipes = new TreeSet<>();
 	}
 

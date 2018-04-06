@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -25,9 +26,6 @@ import org.hibernate.annotations.SortNatural;
 @Entity
 public class Equipe extends Candidat
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 	
 	private static final long serialVersionUID = 4147819927233466035L;
 	

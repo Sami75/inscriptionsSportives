@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.SortedSet;
 
 import commandLineMenus.Action;
 import commandLineMenus.List;
@@ -22,7 +23,7 @@ import back.Passerelle;
 
 public class InscriptionsSportiveConsole {
 
-	private static Inscriptions inscriptions;
+	private Inscriptions inscriptions;
 	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
@@ -107,21 +108,23 @@ public class InscriptionsSportiveConsole {
 				
 				enEquipe = teamOrNotTeam.equals("equipe");
 				
-				inscriptions.createCompetition(nomCompet, localDate, enEquipe);
+				Competition createdCompet = inscriptions.createCompetition(nomCompet, localDate, enEquipe);
+				Passerelle.save(createdCompet);
 				System.out.println("La compétition, " + nomCompet + " a était créée avec succés");
 			}
 		};
 	}
 	
 	public Option listCompetOption() {
+//		inscriptions.getCompetitions() == Passerelle.getData("competition");
 		return new Option("Lister les compétitions", "a",
-				() -> {System.out.println(inscriptions.getCompetitions());}
+				() -> {System.out.println(Passerelle.getData("competition"));}
 		);
 	}
 	
 	private List<Competition> selectCompet() {
 		return new List<Competition>("Sélectionner une compétition", "e",
-				() -> new ArrayList<>(inscriptions.getCompetitions()),
+				() -> new ArrayList<>(Passerelle.getData("competition")),
 				(element) -> menuSelectCompet(element)
 				);
 	}
