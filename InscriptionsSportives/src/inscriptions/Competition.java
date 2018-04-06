@@ -6,17 +6,12 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.SortNatural;
+import org.hibernate.annotations.Type;
 
 /**
  * Représente une compétition, c'est-à-dire un ensemble de candidats 
@@ -42,6 +37,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	@SortNatural
 	private Set<Candidat> candidats;
 	
+	@Column(columnDefinition = "datetime")
 	private LocalDate dateCloture;
 	
 	private boolean enEquipe = false;

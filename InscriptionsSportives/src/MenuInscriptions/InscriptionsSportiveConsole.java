@@ -24,7 +24,7 @@ import back.Passerelle;
 public class InscriptionsSportiveConsole {
 
 	private Inscriptions inscriptions;
-	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
 	public InscriptionsSportiveConsole(Inscriptions inscriptions) {
 		this.inscriptions = inscriptions;

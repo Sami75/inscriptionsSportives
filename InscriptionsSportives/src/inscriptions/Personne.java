@@ -19,6 +19,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.SortNatural;
 
+import back.Passerelle;
+
 /**
  * Repr�sente une personne physique pouvant s'inscrire � une comp�tition.
  */
@@ -68,6 +70,7 @@ public class Personne extends Candidat
 	public void setPrenom(String prenom)
 	{
 		this.prenom = prenom;
+		Passerelle.save(this);
 	}
 
 	/**
@@ -88,6 +91,7 @@ public class Personne extends Candidat
 	public void setMail(String mail)
 	{
 		this.mail = mail;
+		Passerelle.save(this);
 	}
 
 	/**
@@ -102,11 +106,13 @@ public class Personne extends Candidat
 	
 	boolean add(Equipe equipe)
 	{
+		Passerelle.save(equipe);
 		return equipes.add(equipe);
 	}
 
 	boolean remove(Equipe equipe)
 	{
+		Passerelle.delete(equipe);
 		return equipes.remove(equipe);
 	}
 	
@@ -114,8 +120,9 @@ public class Personne extends Candidat
 	public void delete()
 	{
 		super.delete();
-		for (Equipe e : equipes)
-			e.remove(this);
+		for (Equipe e : equipes) 
+			Passerelle.delete(this);
+//			e.remove(this);
 	}
 	
 	@Override
