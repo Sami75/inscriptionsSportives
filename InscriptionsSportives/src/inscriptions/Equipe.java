@@ -27,7 +27,7 @@ public class Equipe extends Candidat
 	@ManyToMany
 	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
-	private SortedSet<Personne> membres = new TreeSet<Personne>();
+	private SortedSet<Personne> membres = new TreeSet<>();
 	
 	Equipe(Inscriptions inscriptions, String nom)
 	{

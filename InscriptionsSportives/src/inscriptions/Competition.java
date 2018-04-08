@@ -44,11 +44,6 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	@Column(columnDefinition="tinyint(1) default 0")
 	private boolean enEquipe = false;
-	
-	@ManyToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE})
-	private Candidat candidat;
-	
 
 	Competition(Inscriptions inscriptions, String nom, Date dateCloture, boolean enEquipe)
 	{
@@ -135,13 +130,14 @@ public class Competition implements Comparable<Competition>, Serializable
 	{
 		// TODO vérifier que l'on avance pas la date.
 		
-			if(localDate.after(this.dateCloture)) {
+			if(localDate.before(this.dateCloture)) {
 				System.out.println("Vous ne pouvez pas avancer la date");
 			}
 			
 			else {
-			Passerelle.save(this);
 			this.dateCloture = localDate;
+			Passerelle.save(this);
+			System.out.println("La date a bien était repoussée");
 			}
 	}
 	
@@ -172,7 +168,8 @@ public class Competition implements Comparable<Competition>, Serializable
 		else if(!inscription)
 			throw new RuntimeException();
 		personne.add(this);
-		Passerelle.save(this);
+		candidats.add(personne);
+		Passerelle.save(personne);
 		return candidats.add(personne);
 	}
 

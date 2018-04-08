@@ -97,10 +97,10 @@ public class InscriptionsSportiveConsole {
 					String dateCloture = InOut.getString("Entrer la date de clôture 'yyyy-MM-dd' : ");
 					Date localDate = formatter.parse(dateCloture);
 					inscriptions.createCompetition(nomCompet, localDate, enEquipe);
-					System.out.println("La compétition, " + nomCompet + " a était créée avec succés.");
 				} catch(ParseException e) {
 					System.out.println("Veuillez respecter le format de la date 'yyyy-MM-dd' ! " + e);
 				}
+				System.out.println("La compétition, " + nomCompet + " a était créée avec succés.");
 			}
 		};
 	}
@@ -151,7 +151,15 @@ public class InscriptionsSportiveConsole {
 	
 	public Option addTeamInCompet(Competition competition, Equipe equipe) {
 		return new Option ("Inscrire " + equipe.getNom() + " dans la compétition : " + competition.getNom(), "a",
-				() -> {competition.add(equipe); Passerelle.save(equipe);System.out.println(equipe.getNom() + " a était inscrit dans la compétition : " + competition.getNom());}
+				() -> {
+						try {
+								competition.add(equipe);
+								System.out.println(equipe.getNom() + " a était inscrit dans la compétition : " + competition.getNom());
+						}
+						catch(RuntimeException e) {
+							System.out.println("La date de clôture est passée " + e);
+						}
+					}
 				);
 	}
 	
@@ -164,7 +172,15 @@ public class InscriptionsSportiveConsole {
 	
 	public Option addGuyInCompet(Competition competition, Personne personne) {
 		return new Option ("Inscrire " + personne.getNom() + " " + personne.getPrenom() + " dans la compétition : " + competition.getNom(), "a",
-				() -> {competition.add(personne); System.out.println(personne.getNom() + " " + personne.getPrenom() + " a était inscrit dans la compétition : " + competition.getNom());}
+				() -> {
+					try {
+						competition.add(personne); 
+						System.out.println(personne.getNom() + " " + personne.getPrenom() + " a était inscrit dans la compétition : " + competition.getNom());
+					}
+					catch(RuntimeException e) {
+						System.out.println("La date de clôture est passée " + e);
+					}
+				}
 				);
 	}
 	
@@ -226,16 +242,13 @@ public class InscriptionsSportiveConsole {
 		return new Option("Repousser la date de clôture", "d",
 				() -> {
 					
-					String dateCloture = null;
-					Date localDate = null;
 					try {
-						dateCloture = InOut.getString("Entrer la nouvelle date de clôture 'yyyy-MM-dd' : ");
-						localDate = formatter.parse(dateCloture);
+						String dateCloture = InOut.getString("Entrer la nouvelle date de clôture 'yyyy-MM-dd' : ");
+						Date localDate = formatter.parse(dateCloture);
 						competition.setDateCloture(localDate);
-					} catch(ParseException e) {
-						System.out.println("Veuillez respecter le format de la date 'yyyy-MM-dd' ! " + e);
+					} catch(ParseException | RuntimeException e) {
+						System.out.println("Le format de la date de clôture n'est pas respecté 'yyyy-MM-dd' ou la date de clôture entrée est antérieur à la date d'aujourd'hui " + e);
 					}
-					System.out.println("La date a bien était repoussée");
 				}
 				);
 	}
