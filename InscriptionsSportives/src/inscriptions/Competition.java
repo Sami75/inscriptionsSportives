@@ -2,7 +2,7 @@ package inscriptions;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -11,7 +11,9 @@ import javax.persistence.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.Type;
+
+
+import back.Passerelle;
 
 /**
  * Représente une compétition, c'est-à-dire un ensemble de candidats 
@@ -27,19 +29,20 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	private static final long serialVersionUID = -2882150118573759729L;
 	
-	
+	@Transient
 	private Inscriptions inscriptions;
 	
 	private String nom;
 
-	@OneToMany(mappedBy = "competition")
+	@ManyToMany
 	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Candidat> candidats;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date dateCloture;
 	
-	@Column(columnDefinition = "datetime")
-	private LocalDate dateCloture;
-	
+	@Column(columnDefinition="tinyint(1) default 0")
 	private boolean enEquipe = false;
 	
 	@ManyToOne
@@ -47,13 +50,17 @@ public class Competition implements Comparable<Competition>, Serializable
 	private Candidat candidat;
 	
 
-	Competition(Inscriptions inscriptions, String nom, LocalDate dateCloture, boolean enEquipe)
+	Competition(Inscriptions inscriptions, String nom, Date dateCloture, boolean enEquipe)
 	{
 		this.enEquipe = enEquipe;
 		this.inscriptions = inscriptions;
 		this.nom = nom;
 		this.dateCloture = dateCloture;
 		candidats = new TreeSet<>();
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	/**
@@ -72,6 +79,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	public void setNom(String nom)
 	{
+		Passerelle.save(this);
 		this.nom = nom ;
 	}
 	
@@ -83,11 +91,11 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	public boolean inscriptionsOuvertes()
 	{
-		LocalDate datesys = LocalDate.now();
+		Date datesys = new Date();
 		// TODO retourner vrai si et seulement si la date systéme est antérieure à la date de clôture.
 		try {
 			
-			if(datesys.compareTo(dateCloture) > 1) {
+			if(datesys.after(dateCloture)) {
 				return false;
 			}
 		}
@@ -102,7 +110,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	 * @return
 	 */
 	
-	public LocalDate getDateCloture()
+	public Date getDateCloture()
 	{
 		return dateCloture;
 	}
@@ -120,20 +128,20 @@ public class Competition implements Comparable<Competition>, Serializable
 	/**
 	 * Modifie la date de cloture des inscriptions. Il est possible de la reculer 
 	 * mais pas de l'avancer.
-	 * @param dateCloture
+	 * @param localDate
 	 */
 	
-	public void setDateCloture(LocalDate dateCloture)
+	public void setDateCloture(Date localDate)
 	{
 		// TODO vérifier que l'on avance pas la date.
 		
-			if(dateCloture.compareTo(this.dateCloture) < 0) {
+			if(localDate.after(this.dateCloture)) {
 				System.out.println("Vous ne pouvez pas avancer la date");
 			}
 			
 			else {
-
-			this.dateCloture = dateCloture;
+			Passerelle.save(this);
+			this.dateCloture = localDate;
 			}
 	}
 	
@@ -164,6 +172,7 @@ public class Competition implements Comparable<Competition>, Serializable
 		else if(!inscription)
 			throw new RuntimeException();
 		personne.add(this);
+		Passerelle.save(this);
 		return candidats.add(personne);
 	}
 
@@ -184,6 +193,8 @@ public class Competition implements Comparable<Competition>, Serializable
 		else if(!inscription)
 			throw new RuntimeException();
 		equipe.add(this);
+		candidats.add(equipe);
+		Passerelle.save(equipe);
 		return candidats.add(equipe);
 	}
 
@@ -196,6 +207,8 @@ public class Competition implements Comparable<Competition>, Serializable
 	public boolean remove(Candidat candidat)
 	{
 		candidat.remove(this);
+		candidats.remove(candidat);
+		Passerelle.delete(candidat);
 		return candidats.remove(candidat);
 	}
 	
@@ -207,7 +220,8 @@ public class Competition implements Comparable<Competition>, Serializable
 	{
 		for (Candidat candidat : candidats)
 			remove(candidat);
-		inscriptions.remove(this);
+		Passerelle.delete(this);
+		//inscriptions.remove(this);
 	}
 	
 	@Override

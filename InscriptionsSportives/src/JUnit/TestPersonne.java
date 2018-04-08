@@ -19,7 +19,7 @@ public class TestPersonne {
 	
 	final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	final String input = "01-07-2018";
-	final LocalDate localDate = LocalDate.parse(input, DATE_FORMAT);
+	final java.sql.Date localDate = java.sql.Date.valueOf(input);
 
 	Inscriptions inscriptions = Inscriptions.getInscriptions();
 	Competition foot = inscriptions.createCompetition("Mondial de foot", localDate, false);

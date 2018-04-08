@@ -6,13 +6,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.time.LocalDate;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import MenuInscriptions.InscriptionsSportiveConsole;
 import back.Passerelle;
+import commandLineMenus.List;
 
 
 /**
@@ -32,14 +36,16 @@ public class Inscriptions implements Serializable
 
 	private Inscriptions(){}
 	
+	
 	/**
 	 * Retourne les comp�titions.
 	 * @return
 	 */
 	
-	public SortedSet<Competition> getCompetitions()
+	@SuppressWarnings("unchecked")
+	public List<Competition> getCompetitions()
 	{
-		return Collections.unmodifiableSortedSet(competitions);
+		return (List<Competition>) Passerelle.getData("Competition");
 	}
 	
 	/**
@@ -47,9 +53,10 @@ public class Inscriptions implements Serializable
 	 * @return
 	 */
 	
-	public SortedSet<Candidat> getCandidats()
+	@SuppressWarnings("unchecked")
+	public List<Candidat> getCandidats()
 	{
-		return Collections.unmodifiableSortedSet(candidats);
+		return (List<Candidat>) Passerelle.getData("Candidat");
 	}
 
 	/**
@@ -57,13 +64,10 @@ public class Inscriptions implements Serializable
 	 * @return
 	 */
 	
-	public SortedSet<Personne> getPersonnes()
+	@SuppressWarnings("unchecked")
+	public List<Personne> getPersonnes()
 	{
-		SortedSet<Personne> personnes = new TreeSet<>();
-		for (Candidat c : getCandidats())
-			if (c instanceof Personne)
-				personnes.add((Personne)c);
-		return Collections.unmodifiableSortedSet(personnes);
+		return (List<Personne>) Passerelle.getData("Personne");
 	}
 
 	/**
@@ -71,29 +75,23 @@ public class Inscriptions implements Serializable
 	 * @return
 	 */
 	
-	public SortedSet<Equipe> getEquipes()
+	@SuppressWarnings("unchecked")
+	public List<Equipe> getEquipes()
 	{
-		SortedSet<Equipe> equipes = new TreeSet<>();
-		for (Candidat c : getCandidats())
-			if (c instanceof Equipe)
-				equipes.add((Equipe)c);
-		return Collections.unmodifiableSortedSet(equipes);
+		return (List<Equipe>) Passerelle.getData("Equipe");
 	}
-
 	/**
 	 * Cr��e une comp�tition. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Competition}.
 	 * @param nom
-	 * @param dateCloture
+	 * @param localDate
 	 * @param enEquipe
 	 * @return
 	 */
 	
-	public Competition createCompetition(String nom, 
-			LocalDate dateCloture, boolean enEquipe)
+	public Competition createCompetition(String nom, Date localDate, boolean enEquipe)
 	{
-		Competition competition = new Competition(this, nom, dateCloture, enEquipe);
-		competitions.add(competition);
+		Competition competition = new Competition(this, nom, localDate, enEquipe);
 		Passerelle.save(competition);
 		return competition;
 	}
@@ -111,7 +109,6 @@ public class Inscriptions implements Serializable
 	public Personne createPersonne(String nom, String prenom, String mail)
 	{
 		Personne personne = new Personne(this, nom, prenom, mail);
-		candidats.add(personne);
 		Passerelle.save(personne);
 		return personne;
 	}
@@ -128,115 +125,25 @@ public class Inscriptions implements Serializable
 	public Equipe createEquipe(String nom)
 	{
 		Equipe equipe = new Equipe(this, nom);
-		candidats.add(equipe);
 		Passerelle.save(equipe);
 		return equipe;
 	}
 	
 	void remove(Competition competition)
 	{
-		Passerelle.delete(competition);
-		competitions.remove(competition);
+		Passerelle.delete(this);
 	}
 	
 	public void remove(Candidat candidat)
 	{
-		Passerelle.delete(candidat);
-		candidats.remove(candidat);
+		Passerelle.delete(this);
 	}
-	
-	/**
-	 * Retourne l'unique instance de cette classe.
-	 * Cr�e cet objet s'il n'existe d�j�.
-	 * @return l'unique objet de type {@link Inscriptions}.
-	 */
 	
 	public static Inscriptions getInscriptions()
 	{
-		
 		if (inscriptions == null)
-		{
-			inscriptions = readObject();
-			if (inscriptions == null)
-				inscriptions = new Inscriptions();
-		}
+			inscriptions = new Inscriptions();
 		return inscriptions;
-	}
-
-	/**
-	 * Retourne un object inscriptions vide. Ne modifie pas les comp�titions
-	 * et candidats d�j� existants.
-	 */
-	
-	public Inscriptions reinitialiser()
-	{
-		inscriptions = new Inscriptions();
-		return getInscriptions();
-	}
-
-	/**
-	 * Efface toutes les modifications sur Inscriptions depuis la derni�re sauvegarde.
-	 * Ne modifie pas les comp�titions et candidats d�j� existants.
-	 */
-	
-	public Inscriptions recharger()
-	{
-		inscriptions = null;
-		return getInscriptions();
-	}
-	
-	private static Inscriptions readObject()
-	{
-		ObjectInputStream ois = null;
-		try
-		{
-			FileInputStream fis = new FileInputStream(FILE_NAME);
-			ois = new ObjectInputStream(fis);
-			return (Inscriptions)(ois.readObject());
-		}
-		catch (IOException | ClassNotFoundException e)
-		{
-			return null;
-		}
-		finally
-		{
-				try
-				{
-					if (ois != null)
-						ois.close();
-				} 
-				catch (IOException e){}
-		}	
-	}
-	
-	/**
-	 * Sauvegarde le gestionnaire pour qu'il soit ouvert automatiquement 
-	 * lors d'une ex�cution ult�rieure du programme.
-	 * @throws IOException 
-	 */
-	
-	public void sauvegarder() throws IOException
-	{
-		ObjectOutputStream oos = null;
-		try
-		{
-			FileOutputStream fis = new FileOutputStream(FILE_NAME);
-			oos = new ObjectOutputStream(fis);
-			oos.writeObject(this);
-		}
-		catch (IOException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			try
-			{
-				if (oos != null)
-					oos.close();
-			} 
-			catch (IOException e){}
-		}
 	}
 	
 	@Override
@@ -249,12 +156,10 @@ public class Inscriptions implements Serializable
 	
 	public static void main(String[] args)
 	{
-		Passerelle back = new Passerelle();
-		back.open();
+		new Passerelle();
+		Passerelle.open();
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
 		InscriptionsSportiveConsole inscriptionsSportiveConsole = new InscriptionsSportiveConsole(inscriptions);
 		inscriptionsSportiveConsole.start();
-		back.close();
-		
 	}
 }

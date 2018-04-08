@@ -6,20 +6,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.SortNatural;
+
+import back.Passerelle;
 
 /**
  * Candidat � un �v�nement sportif, soit une personne physique, soit une �quipe.
@@ -32,7 +25,7 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+	protected int id;
 	
 	private static final long serialVersionUID = -6035399822298694746L;
 	
@@ -41,15 +34,10 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	
 	private String nom;
 	
-	@OneToMany(mappedBy = "candidat")
+	@OneToMany(targetEntity=Candidat.class, mappedBy = "competitions", fetch=FetchType.EAGER)
 	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Competition> competitions;
-	
-	@ManyToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE})
-	private Competition competition;
-
 	
 	Candidat(Inscriptions inscriptions, String nom)
 	{
@@ -58,6 +46,11 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 		competitions = new TreeSet<>();
 	}
 
+	
+	public int getId() {
+		return id;
+	}
+	
 	/**
 	 * Retourne le nom du candidat.
 	 * @return
@@ -76,6 +69,7 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	public void setNom(String nom)
 	{
 		this.nom = nom;
+		Passerelle.save(this);
 	}
 
 	/**
@@ -90,11 +84,13 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	
 	boolean add(Competition competition)
 	{
+		Passerelle.save(this);
 		return competitions.add(competition);
 	}
 
 	boolean remove(Competition competition)
 	{
+		Passerelle.delete(this);
 		return competitions.remove(competition);
 	}
 
@@ -106,7 +102,8 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	{
 		for (Competition c : competitions)
 			c.remove(this);
-		inscriptions.remove(this);
+		//inscriptions.remove(this);
+		Passerelle.delete(this);
 	}
 	
 	@Override
