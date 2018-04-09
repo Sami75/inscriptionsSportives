@@ -34,8 +34,8 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	
 	private String nom;
 	
-	@ManyToMany(mappedBy = "candidats")
-	@Cascade(value = { CascadeType.ALL })
+	@ManyToMany(mappedBy = "candidats", fetch=FetchType.EAGER)
+	@Cascade(value = { CascadeType.ALL})
 	@SortNatural
 	private Set<Competition> competitions;
 	
@@ -115,6 +115,6 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	@Override
 	public String toString()
 	{
-		return "\n" + getNom() + " -> inscrit � " + getCompetitions();
+		return getNom() + " -> inscrit à " + getCompetitions() + "\n";
 	}
 }

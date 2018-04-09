@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.SortedSet;
 
+import org.hibernate.StaleObjectStateException;
+
 import commandLineMenus.Action;
 import commandLineMenus.List;
 import commandLineMenus.Menu;
@@ -201,13 +203,8 @@ public class InscriptionsSportiveConsole {
 	public Option removeCompetOption(Competition competition) {
 		return new Option("Supprimer la compétition : " + competition.getNom(), "r",
 				() -> {
-					if(competition.getCandidats().isEmpty()){
 						competition.delete();
 						System.out.println("La competition a bien était supprimée");
-					}
-					else {
-						System.out.println("La compétition n'est pas vide ! Veuillez supprimer les candidats incrits dans la compétition !");
-					}
 				}
 				);
 	}
@@ -229,10 +226,10 @@ public class InscriptionsSportiveConsole {
 		return new Option("Informations détaillées sur la compétition : " + competition.getNom(), "t",
 				() -> {
 					if(competition.estEnEquipe()) {
-						System.out.println("\nCompétition : " + competition.getNom() + "\n Date de clôture : " + competition.getDateCloture() + "\n Type : Equipe \n ");
+						System.out.println("\nCompétition : " + competition.getNom() + "\n Date de clôture : " + competition.getDateCloture() + "\n Type : Equipe \n Equipes inscrites :\n" + competition.getCandidats());
 					}
 					else {
-						System.out.println("\nCompétition : " + competition.getNom() + "\n Date de clôture : " + competition.getDateCloture() + "\n Type : Individuel \n ");
+						System.out.println("\nCompétition : " + competition.getNom() + "\n Date de clôture : " + competition.getDateCloture() + "\n Type : Individuel \n Sport inscrits :\n" + competition.getCandidats());
 					}
 				}
 				);
@@ -408,7 +405,13 @@ public class InscriptionsSportiveConsole {
 	
 	public Option removeGuyOption(Personne personne) {
 		return new Option("Supprimer " + personne.getNom() + " " + personne.getPrenom(), "s", 
-				() -> {personne.delete();}
+				() -> {
+					try {
+						personne.delete();
+					}catch(StaleObjectStateException e) {
+						System.out.println("Le sportif a bien été supprimé");
+					}
+					}
 				);
 	}
 	

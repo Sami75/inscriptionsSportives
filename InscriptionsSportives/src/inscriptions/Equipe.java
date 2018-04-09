@@ -25,7 +25,6 @@ public class Equipe extends Candidat
 	private static final long serialVersionUID = 4147819927233466035L;
 	
 	@ManyToMany
-	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private SortedSet<Personne> membres = new TreeSet<>();
 	
