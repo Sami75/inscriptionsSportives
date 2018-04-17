@@ -35,6 +35,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	private String nom;
 
 	@ManyToMany
+	@Cascade(value = { CascadeType.ALL})
 	@SortNatural
 	private Set<Candidat> candidats;
 

@@ -27,6 +27,7 @@ public class Personne extends Candidat
 	private String mail;
 	
 	@ManyToMany(mappedBy = "membres", fetch=FetchType.EAGER)
+	@Cascade(value = { CascadeType.ALL})
 	@SortNatural
 	private Set<Equipe> equipes;	
 	

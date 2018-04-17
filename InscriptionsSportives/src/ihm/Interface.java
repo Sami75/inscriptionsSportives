@@ -1,114 +1,115 @@
 package ihm;
 
 import javax.swing.*;
+import javax.swing.border.*;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Interface extends JFrame implements ActionListener {
+public class Interface extends JFrame  {
 
-	JFrame frame = new JFrame();
-	JPanel panel = new JPanel();
+	JTextField lname = new JTextField();
+	JTextField fname = new JTextField();
+	JTextField mail = new JTextField();
+	JLabel result = new JLabel();
+	private JFrame frame = new JFrame();
 	
 	public Interface() {
-		
-		frame.setTitle("Interface Inscription Sportive");
+		initInterface();
+	}
+	
+	public void initInterface() {
+		frame.setTitle("Inscription Sportive Application");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setPreferredSize(new Dimension(900, 600));
-		frame.setContentPane(getMainPanel());
+		frame.setPreferredSize(new Dimension(450, 300));
+		frame.setLocationRelativeTo(null);
+		frame.setContentPane(new Accueil(frame));
 		frame.setVisible(true);
 		frame.pack();
 	}
+	
+	public static void close() {
+		System.exit(0);
+	}
 
-	private JPanel getMainPanel() {
-		// TODO Auto-generated method stub
-
-		ArrayList<JButton> jButtons = new ArrayList<>();
-		jButtons.add(new JButton("Menu Compétition"));
-		jButtons.add(new JButton("Menu Equipe"));
-		jButtons.add(new JButton("Menu Personne"));
-		for(JButton button : jButtons) {
-			panel.add(button);
-			button.addActionListener(this);
-		}
-		return panel;
-	}
 	
-	public void actionPerformed(ActionEvent e) {
-		System.out.println(((JButton) e.getSource()).getText());
-		
-		switch (((JButton) e.getSource()).getText()) {
-		
-			case "Menu Compétition":
-				frame.getContentPane().removeAll();
-				frame.setContentPane(CompetitionIhm());
-				frame.invalidate();
-				frame.validate();
-				break;
-				
-			case "Retour":
-				frame.getContentPane().removeAll();
-				frame.setContentPane(getMainPanel());
-				frame.invalidate();
-				frame.validate();
-				break;
-				
-			case "Menu Personne":
-				frame.getContentPane().removeAll();
-				frame.setContentPane(PersonneIhm());
-				frame.invalidate();
-				frame.validate();
-				break;
-				
-			case "Créer un sportif":
-				frame.getContentPane().removeAll();
-				frame.setContentPane((CreationPersonneIhm()));
-				frame.invalidate();
-				frame.validate();
-				break;
-		}
-	}
 	
-	private JPanel CompetitionIhm() {
-		panel.setLayout(new FlowLayout());
-		ArrayList<JButton> jButtons = new ArrayList<>();
-		jButtons.add(new JButton("Créer une compétition"));
-		jButtons.add(new JButton("Lister les compétitions"));
-		jButtons.add(new JButton("Selectionner une compétition"));
-		jButtons.add(new JButton("Retour"));
-		for(JButton button : jButtons) {
-			panel.add(button);
-			button.addActionListener(this);
-		}
-		return panel;
-	}
 	
-	private JPanel PersonneIhm() {
-		panel.setLayout(new FlowLayout());
-		ArrayList<JButton> jButtons = new ArrayList<>();
-		jButtons.add(new JButton("Créer un sportif"));
-		jButtons.add(new JButton("Afficher les sportifs"));
-		jButtons.add(new JButton("Selectionner un sportif"));
-		jButtons.add(new JButton("Retour"));
-		for(JButton button : jButtons) {
-			panel.add(button);
-			button.addActionListener(this);
-		}
-		return panel;
-	}
-	
-	private JPanel CreationPersonneIhm() {
-		panel.setLayout(new FlowLayout());
-		panel.add(new JLabel("Entrer le nom : "));
-		ArrayList<JButton> jButtons = new ArrayList<>();
-		jButtons.add(new JButton("Retour"));
-		for(JButton button : jButtons) {
-			panel.add(button);
-			button.addActionListener(this);
-		}
-		return panel;
-	}
+//	
+//	private JPanel CompetitionIhm() {
+//		JPanel compet = new JPanel();
+//		compet.setLayout(new FlowLayout());
+//		ArrayList<JButton> jButtons = new ArrayList<>();
+//		jButtons.add(new JButton("Créer une compétition"));
+//		jButtons.add(new JButton("Lister les compétitions"));
+//		jButtons.add(new JButton("Selectionner une compétition"));
+//		jButtons.add(new JButton("Retour"));
+//		for(JButton button : jButtons) {
+//			compet.add(button);
+//			button.addActionListener(this);
+//		}
+//		return compet;
+//	}
+//	
+//	private JPanel PersonneIhm() {
+//		JPanel guy = new JPanel();
+//		guy.setLayout(new FlowLayout());
+//		ArrayList<JButton> jButtons = new ArrayList<>();
+//		jButtons.add(new JButton("Créer un sportif"));
+//		jButtons.add(new JButton("Afficher les sportifs"));
+//		jButtons.add(new JButton("Selectionner un sportif"));
+//		jButtons.add(new JButton("Retour"));
+//		for(JButton button : jButtons) {
+//			guy.add(button);
+//			button.addActionListener(this);
+//		}
+//		return guy;
+//	}
+//	
+//	private JPanel CreationPersonneIhm() {
+//		JPanel createGuy = new JPanel();
+//		lname.setPreferredSize( new Dimension( 200, 24 ) );
+//		fname.setPreferredSize( new Dimension( 200, 24 ) );
+//		mail.setPreferredSize( new Dimension( 200, 24 ) );
+//		createGuy.setBorder(BorderFactory.createTitledBorder("Création du sportif"));
+//		createGuy.add(new JLabel("Nom : "));
+//		createGuy.add(lname);
+//		createGuy.add(new JLabel("Prenom : "));
+//		createGuy.add(fname);
+//		createGuy.add(new JLabel("Mail : "));
+//		createGuy.add(mail);
+//		ArrayList<JButton> jButtons = new ArrayList<>();
+//		jButtons.add(new JButton("Retour"));
+//		for(JButton button : jButtons) {
+//			createGuy.add(button);
+//			button.addActionListener(this);
+//		}
+//		return createGuy;
+//	}
+//	
+//	private KeyListener getKeyListener() {
+//		return new KeyAdapter() {
+//			@Override
+//			public void keyReleased(KeyEvent e) {
+//				afficheCarre();
+//			}
+//		};
+//	}
+//	
+//	private void afficheCarre()
+//	{
+//		try
+//		{
+//			int k = Integer.parseInt(lname.getText());
+//			k *= k;
+//			result.setText("" + k);
+//		}
+//		catch (NumberFormatException e)
+//		{
+//			result.setText("");
+//		}
+//	}
 	
 	public static void main(String[] args)
 	{
