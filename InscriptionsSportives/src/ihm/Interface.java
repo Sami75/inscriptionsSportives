@@ -22,10 +22,11 @@ public class Interface extends JFrame  {
 	public void initInterface() {
 		frame.setTitle("Inscription Sportive Application");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setPreferredSize(new Dimension(450, 300));
+		frame.setPreferredSize(new Dimension(900, 600));
 		frame.setLocationRelativeTo(null);
 		frame.setContentPane(new Accueil(frame));
 		frame.setVisible(true);
+		frame.setResizable(false);
 		frame.pack();
 	}
 	

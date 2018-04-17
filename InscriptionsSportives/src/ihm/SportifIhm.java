@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -65,12 +66,12 @@ public class SportifIhm extends JPanel implements ActionListener {
 	
 	public JPanel createGuyIhm() {
 		JPanel createGuy = new JPanel();
-		nameLabel.setPreferredSize( new Dimension( 200, 24 ) );
-		fnameLabel.setPreferredSize( new Dimension( 200, 24 ) );
-		mailLabel.setPreferredSize( new Dimension( 200, 24 ) );
-		nameField.setPreferredSize( new Dimension( 200, 24 ) );
-		fnameField.setPreferredSize( new Dimension( 200, 24 ) );
-		mailField.setPreferredSize( new Dimension( 200, 24 ) );
+		nameLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		fnameLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		mailLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		nameField.setPreferredSize( new Dimension( 400, 24 ) );
+		fnameField.setPreferredSize( new Dimension( 400, 24 ) );
+		mailField.setPreferredSize( new Dimension( 400, 24 ) );
 		
 		createGuy.setBorder(BorderFactory.createTitledBorder("Création du sportif"));
 		createGuy.add(nameLabel);
