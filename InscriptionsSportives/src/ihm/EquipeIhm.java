@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import inscriptions.Inscriptions;
+
 public class EquipeIhm extends JPanel implements ActionListener {
 
 	private JButton createTeam = new JButton("Créer une équipe");
@@ -18,9 +20,11 @@ public class EquipeIhm extends JPanel implements ActionListener {
 	private JButton selectTeam = new JButton("Selectionner une équipe");
 	private JButton retour = new JButton("Retour");
 	private JFrame frame;
+	private Inscriptions inscriptions;
 
-	public EquipeIhm(JFrame frame) {
+	public EquipeIhm(JFrame frame, Inscriptions inscriptions) {
 		this.frame = frame;
+		this.inscriptions = inscriptions;
 		initEquipeIhm();
 	}
 
@@ -59,7 +63,7 @@ public class EquipeIhm extends JPanel implements ActionListener {
 				case "Retour":
 					System.out.println(((JButton) e.getSource()).getText());
 					frame.getContentPane().removeAll();
-					frame.setContentPane(new Accueil(frame));
+					frame.setContentPane(new Accueil(frame, inscriptions));
 					frame.invalidate();
 					frame.validate();
 					break;

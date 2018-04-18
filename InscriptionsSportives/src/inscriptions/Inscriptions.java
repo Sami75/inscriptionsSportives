@@ -17,6 +17,7 @@ import java.util.TreeSet;
 import MenuInscriptions.InscriptionsSportiveConsole;
 import back.Passerelle;
 import commandLineMenus.List;
+import ihm.Interface;
 
 
 /**
@@ -159,6 +160,7 @@ public class Inscriptions implements Serializable
 		new Passerelle();
 		Passerelle.open();
 		Inscriptions inscriptions = Inscriptions.getInscriptions();
+		Interface ihm = new Interface(inscriptions);
 		InscriptionsSportiveConsole inscriptionsSportiveConsole = new InscriptionsSportiveConsole(inscriptions);
 		inscriptionsSportiveConsole.start();
 	}

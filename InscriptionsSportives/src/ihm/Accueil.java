@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import inscriptions.Inscriptions;
+
 public class Accueil extends JPanel implements ActionListener{
 
 	private JButton competition = new JButton("Compétition");
@@ -18,9 +20,11 @@ public class Accueil extends JPanel implements ActionListener{
 	private JButton sportif = new JButton("Sportif");
 	private JButton quitter = new JButton("Quitter");
 	private JFrame frame;	
+	private Inscriptions inscriptions;
 	
-	public Accueil(JFrame frame) {
+	public Accueil(JFrame frame, Inscriptions inscriptions) {
 		this.frame = frame;
+		this.inscriptions = inscriptions;
 		initAccueil();
 	}
 	
@@ -61,7 +65,7 @@ public class Accueil extends JPanel implements ActionListener{
 		case "Compétition":
 			System.out.println(((JButton) e.getSource()).getText());
 			frame.getContentPane().removeAll();
-			frame.setContentPane(new CompetitionIhm(frame));
+			frame.setContentPane(new CompetitionIhm(frame, inscriptions));
 			frame.invalidate();
 			frame.validate();
 			break;
@@ -69,7 +73,7 @@ public class Accueil extends JPanel implements ActionListener{
 		case "Equipe":
 			System.out.println(((JButton) e.getSource()).getText());
 			frame.getContentPane().removeAll();
-			frame.setContentPane(new EquipeIhm(frame));
+			frame.setContentPane(new EquipeIhm(frame, inscriptions));
 			frame.invalidate();
 			frame.validate();
 			break;
@@ -77,7 +81,7 @@ public class Accueil extends JPanel implements ActionListener{
 		case "Sportif":
 			System.out.println(((JButton) e.getSource()).getText());
 			frame.getContentPane().removeAll();
-			frame.setContentPane((new SportifIhm(frame)));
+			frame.setContentPane((new SportifIhm(frame, inscriptions)));
 			frame.invalidate();
 			frame.validate();
 			break;

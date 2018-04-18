@@ -6,6 +6,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import inscriptions.Inscriptions;
+
 public class CompetitionIhm extends JPanel implements ActionListener {
 
 	private JButton createCompet = new JButton("Créer une compétition");
@@ -13,9 +15,11 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 	private JButton selectCompet = new JButton("Selectionner une compétition");
 	private JButton retour = new JButton("Retour");
 	private JFrame frame;
+	private Inscriptions inscriptions;
 			
-	public CompetitionIhm(JFrame frame) {
+	public CompetitionIhm(JFrame frame, Inscriptions inscriptions) {
 		this.frame = frame;
+		this.inscriptions = inscriptions;
 		initCompetitionIhm();
 	}
 	
@@ -54,7 +58,7 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 				case "Retour":
 					System.out.println(((JButton) e.getSource()).getText());
 					frame.getContentPane().removeAll();
-					frame.setContentPane(new Accueil(frame));
+					frame.setContentPane(new Accueil(frame, inscriptions));
 					frame.invalidate();
 					frame.validate();
 					break;

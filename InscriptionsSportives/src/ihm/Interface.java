@@ -3,6 +3,8 @@ package ihm;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import inscriptions.Inscriptions;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -14,8 +16,10 @@ public class Interface extends JFrame  {
 	JTextField mail = new JTextField();
 	JLabel result = new JLabel();
 	private JFrame frame = new JFrame();
+	private Inscriptions inscriptions;
 	
-	public Interface() {
+	public Interface(Inscriptions inscriptions) {
+		this.inscriptions = inscriptions;
 		initInterface();
 	}
 	
@@ -24,7 +28,7 @@ public class Interface extends JFrame  {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(900, 600));
 		frame.setLocationRelativeTo(null);
-		frame.setContentPane(new Accueil(frame));
+		frame.setContentPane(new Accueil(frame, inscriptions));
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.pack();
@@ -33,6 +37,7 @@ public class Interface extends JFrame  {
 	public static void close() {
 		System.exit(0);
 	}
+}
 
 	
 	
@@ -111,10 +116,4 @@ public class Interface extends JFrame  {
 //			result.setText("");
 //		}
 //	}
-	
-	public static void main(String[] args)
-	{
-		new Interface();
-	}
 
-}

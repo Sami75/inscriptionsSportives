@@ -7,14 +7,27 @@ import java.awt.GridBagLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
+import back.Passerelle;
+import commandLineMenus.List;
+import inscriptions.Inscriptions;
+import inscriptions.Personne;
 
 public class SportifIhm extends JPanel implements ActionListener {
 
@@ -22,18 +35,21 @@ public class SportifIhm extends JPanel implements ActionListener {
 	private JButton listGuy = new JButton("Lister les sportifs");
 	private JButton selectGuy = new JButton("Selectionner un sportif");
 	private JButton retour = new JButton("Retour");
+	private JButton createdGuy = new JButton("Créer le sportif");
 	private JLabel nameLabel = new JLabel("Nom : ");
 	private JLabel fnameLabel = new JLabel("Prenom : ");
 	private JLabel mailLabel = new JLabel("Mail : ");
 	JTextField nameField = new JTextField();
 	JTextField fnameField = new JTextField();
 	JTextField mailField = new JTextField();
+	private Inscriptions inscriptions;
 	
 	
 	private JFrame frame;
 	
-	public SportifIhm(JFrame frame) {
+	public SportifIhm(JFrame frame, Inscriptions inscriptions) {
 		this.frame = frame;
+		this.inscriptions = inscriptions;
 		initSportifIhm();
 	}
 	
@@ -82,20 +98,54 @@ public class SportifIhm extends JPanel implements ActionListener {
 		createGuy.add(mailField);
 
 		createGuy.add(retour);
+		createGuy.add(createdGuy);
+
+		createdGuy.addActionListener(this);
 		
 		return createGuy;
 
 	}
+	
+	public JPanel listGuysIhm() {
+		JPanel listGuys = new JPanel();
+		DefaultListModel list = new DefaultListModel();
+		JList fullList = new JList(list);
+		ArrayList<Personne> guys = new ArrayList<Personne>();
+		guys = (ArrayList) Passerelle.getData("Personne");
+		for(Personne p : guys) {
+			list.addElement(p);
+		}
+		listGuys.setLayout(new FlowLayout());
+		listGuys.add(new JLabel("Liste des sportifs : "));
+		listGuys.add(fullList);
+		listGuys.add(retour);
+
+		return listGuys;
+	}
+	
+	public JPanel selectGuyIhm() {
+		JPanel selectGuy = new JPanel();
+		ArrayList<Personne> guys = new ArrayList<Personne>();
+		guys = (ArrayList) Passerelle.getData("Personne");
+        JComboBox list = new JComboBox();
+
+        for(Personne p : guys) {
+			list.addItem(p.getNom());
+		}
+        selectGuy.add(new JLabel("Selectionner un sportif : "));
+		selectGuy.add(list);
+		selectGuy.add(retour);
+		return selectGuy;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		switch (((JButton) e.getSource()).getText()) {
 				
 				case "Retour":
 					System.out.println(((JButton) e.getSource()).getText());
 					frame.getContentPane().removeAll();
-					frame.setContentPane(new Accueil(frame));
+					frame.setContentPane(new Accueil(frame, inscriptions));
 					frame.invalidate();
 					frame.validate();
 					break;
@@ -106,8 +156,34 @@ public class SportifIhm extends JPanel implements ActionListener {
 					frame.setContentPane(createGuyIhm());
 					frame.invalidate();
 					frame.validate();
+					break;
 					
-			}
+				case "Créer le sportif":
+					System.out.println(((JButton) e.getSource()).getText());
+					inscriptions.createPersonne(nameField.getText(), fnameField.getText(), mailField.getText());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(new SportifIhm(frame, inscriptions));
+					frame.invalidate();
+					frame.validate();
+					break;
+				
+				case "Lister les sportifs":
+					System.out.println(((JButton) e.getSource()).getText());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(listGuysIhm());
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Selectionner un sportif":
+					System.out.println(((JButton) e.getSource()).getText());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(selectGuyIhm());
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+		}
 	}
 
 }

@@ -29,7 +29,7 @@ public class Personne extends Candidat
 	@ManyToMany(mappedBy = "membres", fetch=FetchType.EAGER)
 	@Cascade(value = { CascadeType.ALL})
 	@SortNatural
-	private Set<Equipe> equipes;	
+	private Set<Equipe> equipes;		
 	
 	Personne(Inscriptions inscriptions, String nom, String prenom, String mail)
 	{
