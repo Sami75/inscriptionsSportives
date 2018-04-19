@@ -1,31 +1,15 @@
 package ihm;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.LayoutManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
+
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import back.Passerelle;
-import commandLineMenus.List;
+
 import inscriptions.Inscriptions;
 import inscriptions.Personne;
 
@@ -35,16 +19,20 @@ public class SportifIhm extends JPanel implements ActionListener {
 	private JButton listGuy = new JButton("Lister les sportifs");
 	private JButton selectGuy = new JButton("Selectionner un sportif");
 	private JButton retour = new JButton("Retour");
-	private JButton createdGuy = new JButton("Créer le sportif");
+	private JButton createdGuy = new JButton("Créer");
+	private JButton selectedGuy = new JButton("Valider");
+	private JButton editGuy = new JButton("Editer le sportif");
+	private JButton deleteGuy = new JButton("Supprimer");
+	private JButton editedGuy = new JButton("Editer");
 	private JLabel nameLabel = new JLabel("Nom : ");
 	private JLabel fnameLabel = new JLabel("Prenom : ");
 	private JLabel mailLabel = new JLabel("Mail : ");
 	JTextField nameField = new JTextField();
 	JTextField fnameField = new JTextField();
 	JTextField mailField = new JTextField();
+	JComboBox list = new JComboBox();
 	private Inscriptions inscriptions;
-	
-	
+	private Personne personne;
 	private JFrame frame;
 	
 	public SportifIhm(JFrame frame, Inscriptions inscriptions) {
@@ -127,15 +115,77 @@ public class SportifIhm extends JPanel implements ActionListener {
 		JPanel selectGuy = new JPanel();
 		ArrayList<Personne> guys = new ArrayList<Personne>();
 		guys = (ArrayList) Passerelle.getData("Personne");
-        JComboBox list = new JComboBox();
 
         for(Personne p : guys) {
-			list.addItem(p.getNom());
+			list.addItem(p);
 		}
         selectGuy.add(new JLabel("Selectionner un sportif : "));
 		selectGuy.add(list);
 		selectGuy.add(retour);
+		selectGuy.add(selectedGuy);
+		
+		selectedGuy.addActionListener(this);
 		return selectGuy;
+	}
+	
+	public JPanel selectedGuyIhm(Personne personne) {
+		JPanel selectedGuy = new JPanel(new GridBagLayout());
+		this.personne = personne;
+		selectedGuy.setBorder(new EmptyBorder(10, 10, 10, 10));
+		selectedGuy.setLayout(new GridBagLayout());
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		gbc.anchor = GridBagConstraints.NORTH;
+
+		selectedGuy.add(new JLabel("<html><h1><strong><i>Inscription Sportive</i></strong></h1><hr></html>"), gbc);
+
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+
+		selectedGuy.add(editGuy, gbc);
+		selectedGuy.add(deleteGuy, gbc);
+		selectedGuy.add(retour, gbc);
+
+		gbc.weighty = 1;
+		add(selectedGuy, gbc);
+		editGuy.addActionListener(this);
+		deleteGuy.addActionListener(this);
+		retour.addActionListener(this);
+		
+		return selectedGuy;
+	}
+	
+	public JPanel editGuy(Personne personne) {
+		JPanel editGuy = new JPanel();
+		this.personne = personne;
+		
+		nameLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		fnameLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		mailLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		nameField.setPreferredSize( new Dimension( 400, 24 ) );
+		fnameField.setPreferredSize( new Dimension( 400, 24 ) );
+		mailField.setPreferredSize( new Dimension( 400, 24 ) );
+		
+		nameField.setText(personne.getNom());
+		fnameField.setText(personne.getPrenom());
+		mailField.setText(personne.getMail());
+		
+		editGuy.setBorder(BorderFactory.createTitledBorder("Edition du sportif"));
+		editGuy.add(nameLabel);
+		editGuy.add(nameField);
+		editGuy.add(fnameLabel);
+		editGuy.add(fnameField);
+		editGuy.add(mailLabel);
+		editGuy.add(mailField);
+
+		editGuy.add(retour);
+		editGuy.add(editedGuy);
+
+		editedGuy.addActionListener(this);
+		
+		return editGuy;
+
 	}
 
 	@Override
@@ -158,7 +208,7 @@ public class SportifIhm extends JPanel implements ActionListener {
 					frame.validate();
 					break;
 					
-				case "Créer le sportif":
+				case "Créer":
 					System.out.println(((JButton) e.getSource()).getText());
 					inscriptions.createPersonne(nameField.getText(), fnameField.getText(), mailField.getText());
 					frame.getContentPane().removeAll();
@@ -179,6 +229,42 @@ public class SportifIhm extends JPanel implements ActionListener {
 					System.out.println(((JButton) e.getSource()).getText());
 					frame.getContentPane().removeAll();
 					frame.setContentPane(selectGuyIhm());
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Valider":
+					System.out.println(((JButton) e.getSource()).getText() + " Sportif : " + list.getSelectedItem());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(selectedGuyIhm((Personne) list.getSelectedItem()));
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Editer le sportif":
+					System.out.println(((JButton) e.getSource()).getText());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(editGuy((Personne) list.getSelectedItem()));
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Supprimer":
+					System.out.println(((JButton) e.getSource()).getText());
+					personne.delete();
+					frame.getContentPane().removeAll();
+					frame.setContentPane(selectedGuyIhm((Personne) list.getSelectedItem()));
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Editer":
+					System.out.println(((JButton) e.getSource()).getText());
+					personne.setNom(nameField.getText());
+					personne.setPrenom(fnameField.getText()); 
+					personne.setMail(mailField.getText());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(selectedGuyIhm((Personne) list.getSelectedItem()));
 					frame.invalidate();
 					frame.validate();
 					break;

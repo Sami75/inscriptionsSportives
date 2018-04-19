@@ -2,6 +2,7 @@ package ihm;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -47,6 +48,7 @@ public class Accueil extends JPanel implements ActionListener{
 		buttons.add(sportif, gbc);
 		buttons.add(quitter, gbc);
 
+		
 		gbc.weighty = 1;
 		add(buttons, gbc);
 		competition.addActionListener(this);
