@@ -25,6 +25,7 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 	private JButton listCompetition = new JButton("Lister les compétitions");
 	private JButton selectCompetition = new JButton("Selectionner une compétition");
 	private JButton addCandidatCompetition = new JButton("Ajouter des candidats à la compétition");
+	private JButton detailsCompet = new JButton("Informations détaillées sur la compétition");
 	private JButton retour = new JButton("Retour");
 	private JButton createdCompetition = new JButton("Créer");
 	private JButton selectedCompetition = new JButton("Valider");
@@ -141,8 +142,8 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		ArrayList<Competition> competitions = new ArrayList<Competition>();
 		competitions = (ArrayList) Passerelle.getData("Competition");
 
-        for(Competition e : competitions) {
-			list.addItem(e);
+        for(Competition c : competitions) {
+			list.addItem(c);
 		}
         selectCompetition.add(new JLabel("Selectionner un sportif : "));
 		selectCompetition.add(list);
@@ -171,7 +172,7 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		selectedCompetition.add(editCompetition, gbc);
 		selectedCompetition.add(deleteCompetition, gbc);
 		selectedCompetition.add(retour, gbc);
-//		selectedCompetition.add(listMemberCompetition, gbc);
+		selectedCompetition.add(detailsCompet, gbc);
 		selectedCompetition.add(addCandidatCompetition, gbc);
 
 		gbc.weighty = 1;
@@ -179,7 +180,7 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		editCompetition.addActionListener(this);
 		deleteCompetition.addActionListener(this);
 		retour.addActionListener(this);
-//		listMemberCompetition.addActionListener(this);
+		detailsCompet.addActionListener(this);
 		addCandidatCompetition.addActionListener(this);
 		
 		return selectedCompetition;
@@ -187,52 +188,74 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 	
 	public JPanel editCompetition(Competition competition) {
 		JPanel editCompetition = new JPanel();
+		editCompetition.setLayout(new BorderLayout());
+		JPanel button = new JPanel();
+		JPanel border = new JPanel();
 		this.competition = competition;
 		
 		nameLabel.setPreferredSize( new Dimension( 400, 24 ) );
-		nameField.setPreferredSize( new Dimension( 400, 24 ) );
+		nameField.setPreferredSize( new Dimension( 200, 24 ) );
+		dateLabel.setPreferredSize( new Dimension( 400, 24 ) );
 		nameField.setText(competition.getNom());
 
-		editCompetition.setBorder(BorderFactory.createTitledBorder("Edition du sportif"));
-		editCompetition.add(nameLabel);
-		editCompetition.add(nameField);
+		UtilDateModel model = new UtilDateModel();
+		Properties p = new Properties();
+		p.put("text.today", "Aujourd'hui");
+		p.put("text.month", "Mois");
+		p.put("text.year", "Année");
+		model.setValue(competition.getDateCloture());
+		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+		
+		border.setBorder(BorderFactory.createTitledBorder("Edition de la compétition : " + competition.getNom()));
+		border.add(nameLabel);
+		border.add(nameField);
+		border.add(dateLabel);
+		border.add(datePicker);
+		button.add(retour);
+		button.add(editedCompetition);
+		this.datePicker = datePicker;
 
-		editCompetition.add(retour);
-		editCompetition.add(editedCompetition);
-
+		editCompetition.add(button, BorderLayout.SOUTH);
+		editCompetition.add(border, BorderLayout.CENTER);
+		
 		editedCompetition.addActionListener(this);
 		
 		return editCompetition;
 	}
 	
-//	public JPanel listMemberCompetition(Competition competition) {
-//		JPanel listMemberCompetition = new JPanel();
-//		this.competition = competition;
-//		
-//		DefaultListModel list = new DefaultListModel();
-//		JList fullList = new JList(list);
-//		ArrayList<Competition> competitions = new ArrayList<Competition>();
-//		competitions = (ArrayList) Passerelle.getData("Competition");
-//		for(Competition c : competitions) {
-//			list.addElement(c.getMembres());
-//		}
-//		listMemberCompetition.setLayout(new FlowLayout());
-//		listMemberCompetition.add(new JLabel("Liste des compétitions : "));
-//		listMemberCompetition.add(fullList);
-//		listMemberCompetition.add(retour);
-//
-//		
-//		return listMemberCompetition;
-//	}
-//	
+	public JPanel detailsCompetIhm(Competition competition) {
+		JPanel detailsCompet = new JPanel();
+		this.competition = competition;
+		
+		DefaultListModel list = new DefaultListModel();
+		JList fullList = new JList(list);
+		list.addElement("Nom : " + competition.getNom());
+		list.addElement("Date de clôture : " + competition.getDateCloture());
+		if(competition.estEnEquipe()) 
+			list.addElement("Type : en équipe");
+		else
+			list.addElement("Type : individuel");
+		list.addElement("Equipe inscrites : " + competition.getCandidats());
+		
+		detailsCompet.setLayout(new FlowLayout());
+		detailsCompet.add(new JLabel("Information : "));
+		detailsCompet.add(fullList);
+		detailsCompet.add(retour);
+
+		return detailsCompet;
+	}
+	
 	public JPanel addCandidatCompetition(Competition competition) {
 		JPanel addCompetition = new JPanel();
 		this.competition = competition;
+		listTeams.removeAllItems();
+		listGuys.removeAllItems();
 		if(competition.estEnEquipe()) {
 			ArrayList<Equipe> teams = new ArrayList<Equipe>();
 			teams = (ArrayList) Passerelle.getData("Equipe");
 			for(Equipe e : teams) {
-				listTeams.addItem(e);
+				listTeams.addItem(e);					
 			}
 		}
 		else {
@@ -331,20 +354,21 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 					
 				case "Editer":
 					System.out.println(((JButton) e.getSource()).getText());
-					competition.setNom(nameField.getText());			
+					competition.setNom(nameField.getText());
+					competition.setDateCloture((Date) datePicker.getModel().getValue());
 					frame.getContentPane().removeAll();
 					frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
 					frame.invalidate();
 					frame.validate();
 					break;
 					
-//				case "Lister les compétitions":
-//					System.out.println(((JButton) e.getSource()).getText());			
-//					frame.getContentPane().removeAll();
-//					frame.setContentPane(listMemberCompetitionition((Competitionition) list.getSelectedItem()));
-//					frame.invalidate();
-//					frame.validate();
-//					break;
+				case "Informations détaillées sur la compétition":
+					System.out.println(((JButton) e.getSource()).getText());			
+					frame.getContentPane().removeAll();
+					frame.setContentPane(detailsCompetIhm((Competition) list.getSelectedItem()));
+					frame.invalidate();
+					frame.validate();
+					break;
 					
 				case "Ajouter des candidats à la compétition":
 					System.out.println(((JButton) e.getSource()).getText());			

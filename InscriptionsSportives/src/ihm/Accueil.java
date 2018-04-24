@@ -30,19 +30,19 @@ public class Accueil extends JPanel implements ActionListener{
 	}
 	
 	public void initAccueil() {
-		setBorder(new EmptyBorder(10, 10, 10, 10));
-		setLayout(new GridBagLayout());
+		JPanel buttons = new JPanel(new GridBagLayout());
+		buttons.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.anchor = GridBagConstraints.NORTH;
 
-		add(new JLabel("<html><h1><strong><i>Inscription Sportive</i></strong></h1><hr></html>"), gbc);
+		buttons.add(new JLabel("<html><h1><strong><i>Inscription Sportive</i></strong></h1><hr></html>"), gbc);
 
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
-		JPanel buttons = new JPanel(new GridBagLayout());
+		
 		buttons.add(competition, gbc);
 		buttons.add(equipe, gbc);
 		buttons.add(sportif, gbc);

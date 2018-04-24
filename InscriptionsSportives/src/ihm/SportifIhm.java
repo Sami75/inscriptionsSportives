@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import back.Contact;
 import back.Passerelle;
 
 import inscriptions.Inscriptions;
@@ -24,13 +25,22 @@ public class SportifIhm extends JPanel implements ActionListener {
 	private JButton editGuy = new JButton("Editer le sportif");
 	private JButton deleteGuy = new JButton("Supprimer");
 	private JButton editedGuy = new JButton("Editer");
+	private JButton sendMail = new JButton("Envoyer");
 	private JLabel nameLabel = new JLabel("Nom : ");
 	private JLabel fnameLabel = new JLabel("Prenom : ");
 	private JLabel mailLabel = new JLabel("Mail : ");
+	private JLabel destinataire = new JLabel("A : ");
+	private JLabel object = new JLabel("Objet : ");
+	private JLabel message = new JLabel("Message : ");
+	private JButton contactGuy = new JButton("Contacter");
 	JTextField nameField = new JTextField();
 	JTextField fnameField = new JTextField();
 	JTextField mailField = new JTextField();
+	JTextField objectField = new JTextField();
+	JTextPane messageField = new JTextPane();
+	DefaultListModel listMails = new DefaultListModel();
 	JComboBox list = new JComboBox();
+	JList fullList = new JList();
 	private Inscriptions inscriptions;
 	private Personne personne;
 	private JFrame frame;
@@ -58,6 +68,7 @@ public class SportifIhm extends JPanel implements ActionListener {
 		buttons.add(createGuy, gbc);
 		buttons.add(listGuy, gbc);
 		buttons.add(selectGuy, gbc);
+		buttons.add(contactGuy, gbc);
 		buttons.add(retour, gbc);
 
 		gbc.weighty = 1;
@@ -65,6 +76,7 @@ public class SportifIhm extends JPanel implements ActionListener {
 		createGuy.addActionListener(this);
 		listGuy.addActionListener(this);
 		selectGuy.addActionListener(this);
+		contactGuy.addActionListener(this);
 		retour.addActionListener(this);
 	}
 	
@@ -187,6 +199,52 @@ public class SportifIhm extends JPanel implements ActionListener {
 		return editGuy;
 
 	}
+	
+	public JPanel contactGuyIhm() {
+		JPanel contact = new JPanel();
+		contact.setLayout(new BorderLayout());
+		JPanel button = new JPanel();
+		JPanel border = new JPanel();
+		
+		border.setBorder(BorderFactory.createTitledBorder("Contact"));
+		ArrayList<Personne> guys = new ArrayList<Personne>();
+		guys = (ArrayList) Passerelle.getData("Personne");
+
+        for(Personne p : guys) {
+			listMails.addElement(p.getMail());
+		}
+		fullList = new JList(listMails);
+		fullList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		fullList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		fullList.setVisibleRowCount(-1);
+		
+		JScrollPane jsp = new JScrollPane(messageField);
+		JScrollPane listScroller = new JScrollPane(fullList);
+		destinataire.setPreferredSize(new Dimension(400, 24));
+		listScroller.setPreferredSize(new Dimension(400, 80));
+		object.setPreferredSize(new Dimension(400, 24));
+		objectField.setPreferredSize(new Dimension(400, 24));
+		message.setPreferredSize(new Dimension(400, 24));
+		messageField.setPreferredSize(new Dimension(400, 300));
+		
+		messageField.setCaretPosition(0);
+		
+		border.add(destinataire);
+		border.add(listScroller);
+		border.add(object);
+		border.add(objectField);
+		border.add(message);
+		border.add(jsp);
+		button.add(retour);
+		button.add(sendMail);
+		
+		contact.add(button, BorderLayout.SOUTH);
+		contact.add(border, BorderLayout.CENTER);
+		
+		sendMail.addActionListener(this);
+		
+		return contact;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -269,7 +327,26 @@ public class SportifIhm extends JPanel implements ActionListener {
 					frame.validate();
 					break;
 					
+				case "Contacter":
+					System.out.println(((JButton) e.getSource()).getText());
+					frame.getContentPane().removeAll();
+					frame.setContentPane(contactGuyIhm());
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Envoyer":
+					System.out.println(((JButton) e.getSource()).getText());
+					Object[] mails =  fullList.getSelectedValuesList().toArray();
+					for(int i = 0, n = mails.length; i < n; i++) {
+						String mail = (String) mails[i];
+						Contact.sendMail(mail, objectField.getText(), messageField.getText());
+					}
+					frame.getContentPane().removeAll();
+					frame.setContentPane(new SportifIhm(frame, inscriptions));
+					frame.invalidate();
+					frame.validate();
+					break;				
 		}
 	}
-
 }
