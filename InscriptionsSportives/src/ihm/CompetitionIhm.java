@@ -14,6 +14,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import back.Passerelle;
+import inscriptions.Candidat;
 import inscriptions.Competition;
 import inscriptions.Equipe;
 import inscriptions.Inscriptions;
@@ -21,32 +22,21 @@ import inscriptions.Personne;
 
 public class CompetitionIhm extends JPanel implements ActionListener {
 
-	private JButton createCompetition = new JButton("Créer une compétition");
-	private JButton listCompetition = new JButton("Lister les compétitions");
-	private JButton selectCompetition = new JButton("Selectionner une compétition");
-	private JButton addCandidatCompetition = new JButton("Ajouter des candidats à la compétition");
-	private JButton detailsCompet = new JButton("Informations détaillées sur la compétition");
-	private JButton retour = new JButton("Retour");
-	private JButton createdCompetition = new JButton("Créer");
-	private JButton selectedCompetition = new JButton("Valider");
-	private JButton editCompetition = new JButton("Editer la compétition");
-	private JButton deleteCompetition = new JButton("Supprimer");
-	private JButton editedCompetition = new JButton("Editer");
-	private JButton added = new JButton("Ajouter");
-	private JLabel nameLabel = new JLabel("Nom : ");
-	private JLabel typeLabel = new JLabel("Type : ");
-	private JLabel dateLabel = new JLabel("Date de clôture : ");
-	private JTextField nameField = new JTextField();
-	private JComboBox list = new JComboBox();
-	private JComboBox listTeams = new JComboBox();
-	private JComboBox listGuys = new JComboBox();
+	JLabel nameLabel = new JLabel("Nom : ");
+	JLabel typeLabel = new JLabel("Type : ");
+	JLabel dateLabel = new JLabel("Date de clôture : ");
+	JTextField nameField = new JTextField();
+	JComboBox list = new JComboBox();
+	JComboBox listTeams = new JComboBox();
+	JComboBox listGuys = new JComboBox();
+	JComboBox listCandidat = new JComboBox();
 	String[] type = { "en équipe", "individuel"};
-	private JComboBox listType = new JComboBox(type);
-	private JFrame frame;
-	private JDatePickerImpl datePicker;
-	private boolean enEquipe;
-	private Inscriptions inscriptions;
-	private Competition competition;
+	JComboBox listType = new JComboBox(type);
+	JFrame frame;
+	JDatePickerImpl datePicker;
+	boolean enEquipe;
+	Inscriptions inscriptions;
+	Competition competition;
 			
 	public CompetitionIhm(JFrame frame, Inscriptions inscriptions) {
 		this.frame = frame;
@@ -55,6 +45,10 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 	}
 	
 	public void initCompetitionIhm() {
+		JButton createCompetition = new JButton("Créer une compétition");
+		JButton listCompetition = new JButton("Lister les compétitions");
+		JButton selectCompetition = new JButton("Selectionner une compétition");
+		JButton retour = new JButton("Retour");
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		setLayout(new GridBagLayout());
 
@@ -66,7 +60,8 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-
+		gbc.insets = new Insets(3,3,3,3);
+		
 		JPanel buttons = new JPanel(new GridBagLayout());
 		buttons.add(createCompetition, gbc);
 		buttons.add(listCompetition, gbc);
@@ -82,16 +77,19 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 	}
 
 	public JPanel createCompetitionIhm() {
+		JButton createdCompetition = new JButton("Créer");
+		JButton retour = new JButton("Retour");
 		JPanel createCompetition = new JPanel();
-		createCompetition.setLayout(new BorderLayout());
-		JPanel button = new JPanel();
-		JPanel border = new JPanel();
-		nameLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		
+		nameLabel.setPreferredSize( new Dimension( 70, 24 ) );
 		nameField.setPreferredSize( new Dimension( 200, 24 ) );
-		dateLabel.setPreferredSize( new Dimension( 400, 24 ) );
-		typeLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		dateLabel.setPreferredSize( new Dimension( 70, 24 ) );
+		typeLabel.setPreferredSize( new Dimension( 70, 24 ) );
 		listType.setPreferredSize( new Dimension( 200, 24 ) );
 		((JLabel)listType.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
+		
+		JPanel buttons = new JPanel();
+		buttons.setPreferredSize( new Dimension( 350, 160 ) );
 		
 		UtilDateModel model = new UtilDateModel();
 		Properties p = new Properties();
@@ -101,19 +99,19 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 		
-		border.setBorder(BorderFactory.createTitledBorder("Création de la compétition"));
-		border.add(nameLabel);
-		border.add(nameField);
-		border.add(dateLabel);
-		border.add(datePicker);
-		border.add(typeLabel);
-		border.add(listType);
-		button.add(retour);
-		button.add(createdCompetition);
+		buttons.setBorder(BorderFactory.createTitledBorder("Création de la compétition"));
+		buttons.add(nameLabel);
+		buttons.add(nameField);
+		buttons.add(dateLabel);
+		buttons.add(datePicker);
+		buttons.add(typeLabel);
+		buttons.add(listType);
+		buttons.add(retour);
+		buttons.add(createdCompetition);
 		this.datePicker = datePicker;
 		
-		createCompetition.add(border, BorderLayout.CENTER);
-		createCompetition.add(button, BorderLayout.SOUTH);
+		createCompetition.add(buttons);
+		retour.addActionListener(this);
 		createdCompetition.addActionListener(this);
 		
 		return createCompetition;
@@ -121,6 +119,7 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 	}
 	
 	public JPanel listCompetitionsIhm() {
+		JButton retour = new JButton("Retour");
 		JPanel listCompetitions = new JPanel();
 		DefaultListModel list = new DefaultListModel();
 		JList fullList = new JList(list);
@@ -133,11 +132,13 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		listCompetitions.add(new JLabel("Liste des compétitions : "));
 		listCompetitions.add(fullList);
 		listCompetitions.add(retour);
-
+		retour.addActionListener(this);
 		return listCompetitions;
 	}
 	
 	public JPanel selectCompetitionIhm() {
+		JButton selectedCompetition = new JButton("Valider");
+		JButton retour = new JButton("Retour");
 		JPanel selectCompetition = new JPanel();
 		ArrayList<Competition> competitions = new ArrayList<Competition>();
 		competitions = (ArrayList) Passerelle.getData("Competition");
@@ -151,10 +152,17 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		selectCompetition.add(selectedCompetition);
 		
 		selectedCompetition.addActionListener(this);
+		retour.addActionListener(this);
 		return selectCompetition;
 	}
 	
 	public JPanel selectedCompetitionIhm(Competition competition) {
+		JButton editCompetition = new JButton("Editer la compétition");
+		JButton detailsCompet = new JButton("Informations détaillées sur la compétition");
+		JButton addCandidatCompetition = new JButton("Ajouter des candidats à la compétition");
+		JButton deleteCompetition = new JButton("Supprimer");
+		JButton selectCandidatCompetition = new JButton("Désincrire un candidat de la compétition");
+		JButton retour = new JButton("Retour");
 		JPanel selectedCompetition = new JPanel(new GridBagLayout());
 		this.competition = competition;
 		selectedCompetition.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -168,12 +176,14 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-
+		gbc.insets = new Insets(3,3,3,3);
+		
 		selectedCompetition.add(editCompetition, gbc);
 		selectedCompetition.add(deleteCompetition, gbc);
-		selectedCompetition.add(retour, gbc);
+		selectedCompetition.add(selectCandidatCompetition, gbc);
 		selectedCompetition.add(detailsCompet, gbc);
 		selectedCompetition.add(addCandidatCompetition, gbc);
+		selectedCompetition.add(retour, gbc);
 
 		gbc.weighty = 1;
 		add(selectedCompetition, gbc);
@@ -181,23 +191,27 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		deleteCompetition.addActionListener(this);
 		retour.addActionListener(this);
 		detailsCompet.addActionListener(this);
+		selectCandidatCompetition.addActionListener(this);
 		addCandidatCompetition.addActionListener(this);
+		retour.addActionListener(this);
 		
 		return selectedCompetition;
 	}
 	
 	public JPanel editCompetition(Competition competition) {
+		JButton retour = new JButton("Retour");
+		JButton editedCompetition = new JButton("Editer");
 		JPanel editCompetition = new JPanel();
-		editCompetition.setLayout(new BorderLayout());
-		JPanel button = new JPanel();
-		JPanel border = new JPanel();
 		this.competition = competition;
 		
-		nameLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		nameLabel.setPreferredSize( new Dimension( 70, 24 ) );
 		nameField.setPreferredSize( new Dimension( 200, 24 ) );
-		dateLabel.setPreferredSize( new Dimension( 400, 24 ) );
+		dateLabel.setPreferredSize( new Dimension( 70, 24 ) );
 		nameField.setText(competition.getNom());
 
+		JPanel buttons = new JPanel();
+		buttons.setPreferredSize( new Dimension( 350, 160 ) );
+		
 		UtilDateModel model = new UtilDateModel();
 		Properties p = new Properties();
 		p.put("text.today", "Aujourd'hui");
@@ -207,24 +221,24 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
 		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 		
-		border.setBorder(BorderFactory.createTitledBorder("Edition de la compétition : " + competition.getNom()));
-		border.add(nameLabel);
-		border.add(nameField);
-		border.add(dateLabel);
-		border.add(datePicker);
-		button.add(retour);
-		button.add(editedCompetition);
+		buttons.setBorder(BorderFactory.createTitledBorder("Edition de la compétition : " + competition.getNom()));
+		buttons.add(nameLabel);
+		buttons.add(nameField);
+		buttons.add(dateLabel);
+		buttons.add(datePicker);
+		buttons.add(retour);
+		buttons.add(editedCompetition);
 		this.datePicker = datePicker;
 
-		editCompetition.add(button, BorderLayout.SOUTH);
-		editCompetition.add(border, BorderLayout.CENTER);
-		
+		editCompetition.add(buttons);
+		retour.addActionListener(this);
 		editedCompetition.addActionListener(this);
 		
 		return editCompetition;
 	}
 	
 	public JPanel detailsCompetIhm(Competition competition) {
+		JButton retour = new JButton("Retour");
 		JPanel detailsCompet = new JPanel();
 		this.competition = competition;
 		
@@ -236,17 +250,19 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 			list.addElement("Type : en équipe");
 		else
 			list.addElement("Type : individuel");
-		list.addElement("Equipe inscrites : " + competition.getCandidats());
+		list.addElement("Candidats inscrits : " + competition.getCandidats());
 		
 		detailsCompet.setLayout(new FlowLayout());
 		detailsCompet.add(new JLabel("Information : "));
 		detailsCompet.add(fullList);
 		detailsCompet.add(retour);
-
+		retour.addActionListener(this);
 		return detailsCompet;
 	}
 	
 	public JPanel addCandidatCompetition(Competition competition) {
+		JButton retour = new JButton("Retour");
+		JButton added = new JButton("Ajouter");
 		JPanel addCompetition = new JPanel();
 		this.competition = competition;
 		listTeams.removeAllItems();
@@ -276,8 +292,28 @@ public class CompetitionIhm extends JPanel implements ActionListener {
         addCompetition.add(added);
 		
         added.addActionListener(this);
-		
+        retour.addActionListener(this);
 		return addCompetition;
+	}
+	
+	public JPanel deleteCandidatCompetition(Competition competition) {
+		JButton deleteCandidatCompetition = new JButton("Désincrire le candidat");
+		JButton retour = new JButton("Retour");
+		JPanel selectCandidat = new JPanel();
+		this.competition = competition;
+
+        selectCandidat.add(new JLabel("Selectionner un candidat : "));
+        
+        for(Candidat c : competition.getCandidats()) 
+        	listCandidat.addItem(c);
+        	
+        selectCandidat.add(listTeams);
+        selectCandidat.add(retour);
+        selectCandidat.add(deleteCandidatCompetition);
+		
+		deleteCandidatCompetition.addActionListener(this);
+		retour.addActionListener(this);
+		return selectCandidat;
 	}
 
 	@Override
@@ -330,7 +366,16 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 				case "Valider":
 					System.out.println(((JButton) e.getSource()).getText() + " Sportif : " + list.getSelectedItem());
 					frame.getContentPane().removeAll();
-					frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
+					if(list.getSelectedItem() == null) {
+						JOptionPane.showMessageDialog(frame,
+							    "Veuillez séléctionner une compétition, pour accéder à cette page !",
+							    "Attention !",
+							    JOptionPane.WARNING_MESSAGE);
+						frame.setContentPane(new CompetitionIhm(frame, inscriptions));
+					}
+					else {
+						frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
+					}
 					frame.invalidate();
 					frame.validate();
 					break;
@@ -345,7 +390,20 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 					
 				case "Supprimer":
 					System.out.println(((JButton) e.getSource()).getText());
-					competition.delete();
+					int s = JOptionPane.showConfirmDialog(
+						    frame,
+						    "Etes-vous sûr de vouloir supprimer : " + competition.getNom() + " ?",
+						    "Confirmation",
+						    JOptionPane.YES_NO_OPTION);
+					if(s == 0) {
+						competition.delete();
+						JOptionPane.showMessageDialog(frame,
+							    "La compétition a bien été supprimée !");
+						frame.getContentPane().removeAll();
+						frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
+						frame.invalidate();
+						frame.validate();
+					}
 					frame.getContentPane().removeAll();
 					frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
 					frame.invalidate();
@@ -356,6 +414,8 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 					System.out.println(((JButton) e.getSource()).getText());
 					competition.setNom(nameField.getText());
 					competition.setDateCloture((Date) datePicker.getModel().getValue());
+					JOptionPane.showMessageDialog(frame,
+						    "La compétition : " + competition.getNom() + " a bien été éditée ! ");
 					frame.getContentPane().removeAll();
 					frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
 					frame.invalidate();
@@ -385,6 +445,46 @@ public class CompetitionIhm extends JPanel implements ActionListener {
 					else
 						competition.add(((Personne) listGuys.getSelectedItem()));
 						
+					frame.getContentPane().removeAll();
+					frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Désincrire un candidat de la compétition":
+					System.out.println(((JButton) e.getSource()).getText());			
+					frame.getContentPane().removeAll();
+					frame.setContentPane(deleteCandidatCompetition((Competition) list.getSelectedItem()));
+					frame.invalidate();
+					frame.validate();
+					break;
+					
+				case "Désincrire le candidat":
+					System.out.println(((JButton) e.getSource()).getText());
+					if(listCandidat.getSelectedItem() == null) {
+						JOptionPane.showMessageDialog(frame,
+							    "Veuillez séléctionner un candidat !",
+							    "Attention !",
+							    JOptionPane.WARNING_MESSAGE);
+						frame.setContentPane(new CompetitionIhm(frame, inscriptions));
+					}
+					else {
+						int t = JOptionPane.showConfirmDialog(frame,
+							    "Etes-vous sûr de vouloir désincrire le candidat de la compétition ?",
+							    "Confirmation",
+							    JOptionPane.YES_NO_OPTION);
+						if(t == 0) {
+							competition.remove((Candidat) listCandidat.getSelectedItem());
+							JOptionPane.showMessageDialog(frame,
+							    "Le candidat a bien été désinscrit de la compétition !");
+							frame.getContentPane().removeAll();
+							frame.setContentPane(deleteCandidatCompetition((Competition) list.getSelectedItem()));
+							frame.invalidate();
+							frame.validate();
+							break;
+							}
+						}
+					
 					frame.getContentPane().removeAll();
 					frame.setContentPane(selectedCompetitionIhm((Competition) list.getSelectedItem()));
 					frame.invalidate();

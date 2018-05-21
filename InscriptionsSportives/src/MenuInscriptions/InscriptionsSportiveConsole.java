@@ -302,7 +302,7 @@ public class InscriptionsSportiveConsole {
 	
 	public Option removeTeamOption(Equipe equipe) {
 		return new Option("Supprimer " + equipe.getNom(), "s",
-				() -> {equipe.delete();}
+				() -> {equipe.delete(); Passerelle.delete(equipe);}
 				);
 	}
 	

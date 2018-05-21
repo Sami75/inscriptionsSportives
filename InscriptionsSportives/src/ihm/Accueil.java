@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -30,26 +31,26 @@ public class Accueil extends JPanel implements ActionListener{
 	}
 	
 	public void initAccueil() {
-		JPanel buttons = new JPanel(new GridBagLayout());
-		buttons.setBorder(new EmptyBorder(10, 10, 10, 10));
-
+		setBorder(new EmptyBorder(10, 10, 10, 10));
+		setLayout(new GridBagLayout());
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.anchor = GridBagConstraints.NORTH;
-
-		buttons.add(new JLabel("<html><h1><strong><i>Inscription Sportive</i></strong></h1><hr></html>"), gbc);
-
+		
+		add(new JLabel("<html><h1><strong><i>Inscription Sportive</i></strong></h1><hr></html>"), gbc);
+		
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-
-		
+		gbc.insets = new Insets(3,3,3,3);
+		JPanel buttons = new JPanel(new GridBagLayout());
 		buttons.add(competition, gbc);
 		buttons.add(equipe, gbc);
 		buttons.add(sportif, gbc);
 		buttons.add(quitter, gbc);
-
 		
 		gbc.weighty = 1;
+		
 		add(buttons, gbc);
 		competition.addActionListener(this);
 		equipe.addActionListener(this);
@@ -61,7 +62,14 @@ public class Accueil extends JPanel implements ActionListener{
 		switch (((JButton) e.getSource()).getText()) {
 		
 		case "Quitter":
-			Interface.close();
+			int s = JOptionPane.showConfirmDialog(
+				    frame,
+				    "Etes-vous sûr de vouloir quitter l'application ?",
+				    "Quitter",
+				    JOptionPane.YES_NO_OPTION);
+			if(s == 0) {
+				Interface.close();
+			}
 			break;
 			
 		case "Compétition":

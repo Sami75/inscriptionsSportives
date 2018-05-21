@@ -26,14 +26,22 @@ public class Personne extends Candidat
 
 	private String mail;
 	
-	@ManyToMany(mappedBy = "membres", fetch=FetchType.EAGER)
-	@Cascade(value = { CascadeType.ALL})
+	@ManyToMany(targetEntity=Equipe.class, mappedBy = "membres", fetch=FetchType.EAGER)
+	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Equipe> equipes;		
 	
 	Personne(Inscriptions inscriptions, String nom, String prenom, String mail)
 	{
 		super(inscriptions, nom);
+		this.prenom = prenom;
+		this.mail = mail;
+		equipes = new TreeSet<>();
+	}
+	
+	public Personne(String nom, String prenom, String mail)
+	{
+		super(nom);
 		this.prenom = prenom;
 		this.mail = mail;
 		equipes = new TreeSet<>();
@@ -101,7 +109,7 @@ public class Personne extends Candidat
 	boolean remove(Equipe equipe)
 	{
 		equipes.remove(equipe);
-		Passerelle.delete(equipe);
+		//Passerelle.delete(equipe);
 		return equipes.remove(equipe);
 	}
 	
@@ -110,8 +118,8 @@ public class Personne extends Candidat
 	{
 		super.delete();
 		for (Equipe e : equipes) 
-			Passerelle.delete(this);
-//			e.remove(this);
+			//Passerelle.delete(this);
+			e.remove(this);
 	}
 	
 	@Override

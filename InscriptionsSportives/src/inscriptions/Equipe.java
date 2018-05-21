@@ -25,12 +25,20 @@ public class Equipe extends Candidat
 	private static final long serialVersionUID = 4147819927233466035L;
 	
 	@ManyToMany
+	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private SortedSet<Personne> membres = new TreeSet<>();
 	
 	Equipe(Inscriptions inscriptions, String nom)
 	{
 		super(inscriptions, nom);
+		membres = new TreeSet<>();
+	}
+	
+	public Equipe(String nom)
+	{
+		super(nom);
+		membres = new TreeSet<>();
 	}
 
 	/**
@@ -66,14 +74,18 @@ public class Equipe extends Candidat
 	{
 		membre.remove(this);
 		membres.remove(membre);
-		Passerelle.delete(membre);
+		Passerelle.save(this);
 		return membres.remove(membre);
 	}
 
 	@Override
 	public void delete()
 	{
-		super.delete();
+		for (Personne personne : membres)
+		personne.remove(this);
+	
+	 membres.clear();
+	 Passerelle.delete(this);
 	}
 	
 	@Override

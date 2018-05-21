@@ -35,6 +35,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	private String nom;
 
 	@ManyToMany
+	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Candidat> candidats;
 
@@ -48,6 +49,14 @@ public class Competition implements Comparable<Competition>, Serializable
 	{
 		this.enEquipe = enEquipe;
 		this.inscriptions = inscriptions;
+		this.nom = nom;
+		this.dateCloture = dateCloture;
+		candidats = new TreeSet<>();
+	}
+	
+	public Competition(String nom, Date dateCloture, boolean enEquipe)
+	{
+		this.enEquipe = enEquipe;
 		this.nom = nom;
 		this.dateCloture = dateCloture;
 		candidats = new TreeSet<>();
@@ -204,9 +213,8 @@ public class Competition implements Comparable<Competition>, Serializable
 	{
 		candidat.remove(this);
 		candidats.remove(candidat);
-		Passerelle.delete(candidat);
 		return candidats.remove(candidat);
-	}
+	}	
 	
 	/**
 	 * Supprime la compétition de l'application.
@@ -215,7 +223,8 @@ public class Competition implements Comparable<Competition>, Serializable
 	public void delete()
 	{
 		for (Candidat candidat : candidats)
-			remove(candidat);
+			candidat.remove(this);
+		candidats.clear();
 		Passerelle.delete(this);
 		//inscriptions.remove(this);
 	}

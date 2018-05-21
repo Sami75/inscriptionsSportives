@@ -39,25 +39,23 @@ public class Inscriptions implements Serializable
 	
 	
 	/**
-	 * Retourne les comp�titions.
+	 * Retourne les compétitions.
 	 * @return
 	 */
 	
-	@SuppressWarnings("unchecked")
-	public List<Competition> getCompetitions()
+	public SortedSet<Competition> getCompetitions()
 	{
-		return (List<Competition>) Passerelle.getData("Competition");
+		return Collections.unmodifiableSortedSet(competitions);
 	}
 	
 	/**
-	 * Retourne tous les candidats (personnes et �quipes confondues).
+	 * Retourne tous les candidats (personnes et équipes confondues).
 	 * @return
 	 */
 	
-	@SuppressWarnings("unchecked")
-	public List<Candidat> getCandidats()
+	public SortedSet<Candidat> getCandidats()
 	{
-		return (List<Candidat>) Passerelle.getData("Candidat");
+		return Collections.unmodifiableSortedSet(candidats);
 	}
 
 	/**
@@ -65,22 +63,29 @@ public class Inscriptions implements Serializable
 	 * @return
 	 */
 	
-	@SuppressWarnings("unchecked")
-	public List<Personne> getPersonnes()
+	public SortedSet<Personne> getPersonnes()
 	{
-		return (List<Personne>) Passerelle.getData("Personne");
+		SortedSet<Personne> personnes = new TreeSet<>();
+		for (Candidat c : getCandidats())
+			if (c instanceof Personne)
+				personnes.add((Personne)c);
+		return Collections.unmodifiableSortedSet(personnes);
 	}
 
 	/**
-	 * Retourne toutes les �quipes.
+	 * Retourne toutes les équipes.
 	 * @return
 	 */
 	
-	@SuppressWarnings("unchecked")
-	public List<Equipe> getEquipes()
+	public SortedSet<Equipe> getEquipes()
 	{
-		return (List<Equipe>) Passerelle.getData("Equipe");
+		SortedSet<Equipe> equipes = new TreeSet<>();
+		for (Candidat c : getCandidats())
+			if (c instanceof Equipe)
+				equipes.add((Equipe)c);
+		return Collections.unmodifiableSortedSet(equipes);
 	}
+	
 	/**
 	 * Cr��e une comp�tition. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Competition}.
@@ -132,12 +137,12 @@ public class Inscriptions implements Serializable
 	
 	void remove(Competition competition)
 	{
-		Passerelle.delete(this);
+		competition.delete();;
 	}
 	
 	public void remove(Candidat candidat)
 	{
-		Passerelle.delete(this);
+		candidat.delete();
 	}
 	
 	public static Inscriptions getInscriptions()

@@ -78,6 +78,13 @@ public class Passerelle {
 		Query query = session.createQuery("from " + className);
 		return new ArrayList<T>((List<T>) query.list());
 	}
+	
+//	@SuppressWarnings("unchecked")
+//	public static <T> List<T> getData(String className)
+//	{
+//		Query query = session.createQuery("from " + className);
+//		return (List<T>) (query.list());
+//	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getData(String className, int id)

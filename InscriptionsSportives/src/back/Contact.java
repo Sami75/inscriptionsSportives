@@ -3,20 +3,14 @@ package back;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.swing.JList;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-
-import inscriptions.Personne;
-
-import javax.activation.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class Contact {
 
 	public Contact() {}
 	
-	public static void sendMail(String mail, String object, String content) {
-
+	public static void sendMail(String mail, String object, String content, JFrame frame) {
 
 		final String username = "inscription.sportive@gmail.com";
 		final String password = "123456azerty";
@@ -48,7 +42,10 @@ public class Contact {
 			System.out.println("Done");
 
 		} catch (MessagingException e) {
-			throw new RuntimeException(e);
+			JOptionPane.showMessageDialog(frame,
+				    "Une erreur a été rencontré, l'adresse mail n'est sans doute pas valide, si le problème ne vient pas de la ou persiste veuillez contacter l'équipe de développement. Erreur : " + e,
+				    "Erreur !",
+				    JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

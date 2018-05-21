@@ -34,14 +34,20 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	
 	private String nom;
 	
-	@ManyToMany(mappedBy = "candidats", fetch=FetchType.EAGER)
-	@Cascade(value = { CascadeType.ALL})
+	@ManyToMany(targetEntity=Competition.class, mappedBy = "candidats", fetch=FetchType.EAGER)
+	@Cascade(value = { CascadeType.ALL })
 	@SortNatural
 	private Set<Competition> competitions;
 	
 	Candidat(Inscriptions inscriptions, String nom)
 	{
 		this.inscriptions = inscriptions;	
+		this.nom = nom;
+		competitions = new TreeSet<>();
+	}
+	
+	public Candidat(String nom)
+	{
 		this.nom = nom;
 		competitions = new TreeSet<>();
 	}
@@ -90,7 +96,9 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 
 	boolean remove(Competition competition)
 	{
-		Passerelle.delete(this);
+		competitions.remove(competition);
+//		Passerelle.delete(competition);
+		Passerelle.save(this);
 		return competitions.remove(competition);
 	}
 
